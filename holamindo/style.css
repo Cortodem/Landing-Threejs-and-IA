@@ -3,6 +3,23 @@
 }
 
 body {
+  background-image: url("cielo-nubes.jpg");
+  background-repeat: repeat;       /* mosaico */
+  background-attachment: fixed;    /* fondo fijo */
+}
+
+.background-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-image: url("cielo-nubes.jpg");
+  background-repeat: repeat;
+}
+
+body {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -16,8 +33,6 @@ body {
     scrollbar-width: none;
     /* Internet Explorer 10+ */
     -ms-overflow-style: none;
-
-    background-color: skyblue;
 }
 
 body::-webkit-scrollbar {

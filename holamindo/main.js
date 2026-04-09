@@ -170,6 +170,29 @@ crearMurallaExterior(0.25, 0.5, 1.25, 1.25);   // Tramo Llano Amarillo Superior
 crearMurallaExterior(0.5, 0.75, 1.25, -1.75);  // Tramo Bajada Verde
 crearMurallaExterior(0.75, 1.0, -1.75, -1.75); // Tramo Llano Amarillo Inferior
 
+// 1. Crear geometría de cilindro abierto (sin tapas)
+const radioBase = a; // Usamos el radio mayor de 10 [1]
+const alturaCilindro = 10; 
+const geoCilindro = new THREE.CylinderGeometry(radioBase, radioBase, alturaCilindro, 64, 1, true); 
+
+// 2. Material con doble cara para que se vea el interior
+const matCilindro = new THREE.MeshStandardMaterial({ 
+  color: 0xff00ff, 
+  side: THREE.DoubleSide, 
+  transparent: true, 
+  opacity: 1 
+}); 
+
+const cilindroHueco = new THREE.Mesh(geoCilindro, matCilindro); 
+
+// 3. Transformar en elipse ajustando la escala Z (b/a = 5/10 = 0.5)
+cilindroHueco.scale.set(1, 1, b / a); 
+
+// 4. Posicionar (centrado entre el nivel -0.75 y 3)
+cilindroHueco.position.set(0, 1.125, 0); 
+
+scene.add(cilindroHueco); 
+
 
 // 4. Recorrido Elíptico Sincronizado
 const puntosEsquiva = [];
