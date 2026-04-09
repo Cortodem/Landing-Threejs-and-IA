@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Colegio departamentos Hogwarts</title>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        canvas {
+            position: fixed;
+            /* Mantiene el renderizador fijo en el fondo */
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav style="position: fixed; top: 20px; left: 20px; z-index: 100;">
+        <button onclick="irAObjeto('clases')">Clases</button>
+        <button onclick="irAObjeto('prefectos')">Prefectos</button>
+        <button onclick="irAObjeto('profesores')">Profesores</button>
+        <button onclick="irAObjeto('aulas')">Aulas</button>
+    </nav>
+
+    <!-- <header class="info">
+        <nav class="menu nav">
+            <ul>
+                <li><a href="#clases">Clases</a></li>
+                <li><a href="#profesores">Profesores</a></li>
+                <li><a href="#prefectos">Prefectos</a></li>
+                <li><a href="#aulas">Aulas</a></li>
+            </ul>
+        </nav>
+
+        <nav class="menu social">
+            <ul>
+                <li><a href="#">RRSS#1</a></li>
+                <li><a href="#">RRSS#2</a></li>
+            </ul>
+        </nav>
+
+        <nav class="menu legal">
+            <ul>
+                <li><a href="#">Legal</a></li>
+                <li><a href="#">Derechos</a></li>
+            </ul>
+        </nav>
+    </header> -->
+
+    <main>
+        <!-- <section class="department">
+            <div class="dep" id="clases">
+                <h2>Clases</h2>
+            </div>
+            <div class="dep" id="profesores">
+                <h2>Profesores</h2>
+            </div>
+            <div class="dep" id="prefectos">
+                <h2>Prefectos</h2>
+            </div>
+            <div class="dep" id="aulas">
+                <h2>Aulas</h2>
+            </div>
+        </section> -->
+    </main>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.162.0/build/three.module.js",
+    "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js",
+    "gsap/ScrollTrigger": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js"
+  }
+}
+</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>

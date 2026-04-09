@@ -1,0 +1,94 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 5000vh;
+    margin: 0;
+    /* Esto define la "longitud" del scroll para completar el giro */
+    height: 1000vh;
+
+    overflow-y: scroll;
+    /* Firefox */
+    scrollbar-width: none;
+    /* Internet Explorer 10+ */
+    -ms-overflow-style: none;
+
+    background-color: skyblue;
+}
+
+body::-webkit-scrollbar {
+    /* Chrome, Edge, Safari */
+    display: none;
+}
+
+
+
+header {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 1;
+
+    .menu>ul {
+        list-style: none;
+
+        a {
+            pointer-events: auto;
+            text-decoration: none;
+        }
+    }
+
+    .nav {
+        position: absolute;
+        top: 50%;
+        left: 1%;
+        background-color: red;
+    }
+
+    .social {
+        position: absolute;
+        top: 0%;
+        right: 1%;
+        background-color: red;
+    }
+
+    .legal {
+        position: absolute;
+        top: 0%;
+        left: 1%;
+        background-color: red;
+    }
+}
+
+
+
+canvas {
+    position: fixed;
+    /* Mantiene el renderizador fijo en el fondo */
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+.department {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    gap: 200px;
+    background-color: black;
+    color: red;
+
+    .dep {
+        display: flex;
+        align-items: center;
+        height: 20%;
+        width: 10%;
+        background-color: blue;
+    }
+}
