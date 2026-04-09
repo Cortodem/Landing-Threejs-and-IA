@@ -39,70 +39,89 @@ datosBloques.forEach((d) => {
 
 /// Función para suelos alineados a la base (-0.75 respecto al centro)
 const crearSuelo = (yPos, color) => {
-  const suelo = new THREE.Mesh(
-    new THREE.PlaneGeometry(50, 50),
-    new THREE.MeshStandardMaterial({ color, side: THREE.DoubleSide })
-  );
-  suelo.rotation.x = -Math.PI / 2;
-  suelo.position.y = yPos - 0.75;
-  scene.add(suelo);
+    const suelo = new THREE.Mesh(
+        new THREE.PlaneGeometry(50, 50),
+        new THREE.MeshStandardMaterial({ color, side: THREE.DoubleSide })
+    );
+    suelo.rotation.x = -Math.PI / 2;
+    suelo.position.y = yPos - 0.75;
+    scene.add(suelo);
 };
 
 crearSuelo(0, 0x333333); // Suelo nivel inferior
 crearSuelo(3, 0x555555); // Suelo nivel superior
 
-// Función generadora de escaleras
-function crearEscalera(p1, p2) {
+function crearEscaleraVerdeEliptica(pInicio, pFin, yBaseInicio, yBaseFin) {
   const grupo = new THREE.Group();
-  const dy = p2.y - p1.y;
-  const dx = p2.x - p1.x;
-  const dz = p2.z - p1.z;
-  const distanciaHorizontal = Math.sqrt(dx * dx + dz * dz);
+  const pasos = 35;
+  
+  // Coordenadas de la elipse verde (a + 2.5 y b + 2.5)
+  const aVerde = 12.5; 
+  const bVerde = 7.5;
 
-  const numEscalones = Math.max(Math.ceil(Math.abs(dy) / 0.18), 1);
-  const altoEscalon = dy / numEscalones;
-  const profundoEscalon = distanciaHorizontal / numEscalones;
+  for (let i = 0; i <= pasos; i++) {
+    const t = i / pasos;
+    const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
+    
+    // X y Z de la elipse verde
+    const x = aVerde * Math.cos(theta);
+    const z = bVerde * Math.sin(theta);
+    
+    // Y de la "blanca" (empezando en su nivel -0.75 hasta el bloque elevado)
+    const y = yBaseInicio + (yBaseFin - yBaseInicio) * t;
 
-  const geo = new THREE.BoxGeometry(2, Math.abs(altoEscalon), profundoEscalon); [3]
-  const mat = new THREE.MeshStandardMaterial({ color: 0x777777 }); [3]
+    const peldaño = new THREE.Mesh(
+      new THREE.BoxGeometry(2.5, 0.1, 1),
+      new THREE.MeshStandardMaterial({ color: 0x00ff00 }) // Color Verde
+    );
 
-  for (let i = 0; i < numEscalones; i++) {
-    const escalon = new THREE.Mesh(geo, mat); [1]
-    escalon.position.set(0, (i + 0.5) * altoEscalon, (i + 0.5) * profundoEscalon);
-    grupo.add(escalon);
+    peldaño.position.set(x, y, z);
+    
+    // Orientación siguiendo la elipse verde
+    const sigTheta = theta + 0.01;
+    peldaño.lookAt(aVerde * Math.cos(sigTheta), y, bVerde * Math.sin(sigTheta));
+    
+    grupo.add(peldaño);
   }
-
-  grupo.position.set(p1.x, p1.y, p1.z);
-  grupo.lookAt(p2.x, p1.y, p2.z); // Orienta la escalera hacia el siguiente bloque
   scene.add(grupo);
 }
 
-// Tramo 1 (Subida): Del Bloque 1 (clases) al Bloque 2 (profesores)
-crearEscalera(
-  new THREE.Vector3(a, -0.75, 0),    // Base de Clases (Y=0)
-  new THREE.Vector3(-a, 2.25, 0)    // Base de Profesores (Y=3)
-);
+// 1. Tramo del Bloque 1 al 3 (Scroll 0 a 0.25) - SUBIDA
+crearEscaleraVerdeEliptica(0, 0.25, -0.75, 2.25);
 
-// Tramo 2 (Bajada): Del Bloque 3 (prefectos) al Bloque 4 (aulas)
-crearEscalera(
-  new THREE.Vector3(0, 2.25, b),    // Base de Prefectos (Y=3)
-  new THREE.Vector3(0, -0.75, -b)   // Base de Aulas (Y=0)
-);
+// 2. Tramo del Bloque 2 al 4 (Scroll 0.5 a 0.75) - BAJADA
+crearEscaleraVerdeEliptica(0.5, 0.75, 2.25, -0.75);
 
-// 4. Recorrido Orgánico y Marcador (Cámara)
+
+// 4. Recorrido Elíptico Sincronizado
 const puntosEsquiva = [];
-const segmentos = 5000;
+const segmentos = 300;
+const aCamara = 12.5; // Radio elipse verde en X (a + 2.5)
+const bCamara = 7.5;  // Radio elipse verde en Z (b + 2.5)
+
 for (let i = 0; i <= segmentos; i++) {
-    const theta = (i / segmentos) * Math.PI * 2;
-    const variacion = Math.abs(Math.cos(theta * 2)) * 2.5;
-    const x = (a + variacion) * Math.cos(theta);
-    const z = (b + variacion) * Math.sin(theta);
+  const theta = (i / segmentos) * Math.PI * 2;
+  
+  // X y Z siguen una elipse perfecta
+  const x = aCamara * Math.cos(theta);
+  const z = bCamara * Math.sin(theta);
+  
+  // Y sigue la subida y bajada de las escaleras (Y base 1 + elevación de 3)
+  let y = 1;
+  // Tramo 1 a 3 (Subida):
+  if (theta > 0 && theta < Math.PI / 2) {
+    y = 1 + (theta / (Math.PI / 2)) * 3;
+  } 
+  // Tramo 3 a 2 (Meseta):
+  else if (theta >= Math.PI / 2 && theta <= Math.PI) {
+    y = 4;
+  } 
+  // Tramo 2 a 4 (Bajada):
+  else if (theta > Math.PI && theta < (3 * Math.PI) / 2) {
+    y = 4 - ((theta - Math.PI) / (Math.PI / 2)) * 3;
+  }
 
-    // Elevación suave: sube gradualmente hasta un máximo de 4 (1 de base + 3 de altura)
-    // Ajustamos el desfase (PI/4) para que el pico coincida con los objetos elevados
-    const y = 1 + Math.pow(Math.sin(theta / 2 + Math.PI / 8), 2) * 3;
-
-    puntosEsquiva.push(new THREE.Vector3(x, y, z));
+  puntosEsquiva.push(new THREE.Vector3(x, y, z));
 }
 
 
