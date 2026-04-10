@@ -1,34 +1,63 @@
 import * as THREE from 'three';
 
 
-// 1. Escena, Cámara y Renderizador
+// --- 1. ESCENA, CÁMARA Y RENDERIZADOR ---
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-const loader = new THREE.TextureLoader();
+// --- 2. GESTIÓN DE TEXTURAS (OPTIMIZADO) ---
+const loadingManager = new THREE.LoadingManager();
+loadingManager.onStart = () => console.log('Cargando texturas...');
+loadingManager.onLoad = () => console.log('¡Todas las texturas listas!');
+const loader = new THREE.TextureLoader(loadingManager);
+
 const texturaPiedra = loader.load('assets/textures/castle_wall_1k.jpg');
 const texturaMarmol = loader.load('assets/textures/marble_01_diff_1k.jpg');
 const texturaMaderaEscaleras = loader.load('assets/textures/wood_table_worn_1k.jpg');
 const texturaPuerta = loader.load('assets/textures/wood_planks_dirt_1k.jpg');
 
+// Configuración de repetición
+[texturaPiedra, texturaMarmol, texturaMaderaEscaleras].forEach(t => {
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+});
+texturaPiedra.repeat.set(4, 1);
+texturaMarmol.repeat.set(8, 1);
+
+// --- 3. GEOMETRÍAS Y MATERIALES COMPARTIDOS (OPTIMIZACIÓN DE MEMORIA) ---
+
+const geoPuerta = new THREE.BoxGeometry(1.2, 2.4, 0.2);
+const matPuerta = new THREE.MeshStandardMaterial({ map: texturaPuerta, roughness: 0.8 });
+
+const geoMuro = new THREE.BoxGeometry(0.1, 2, 0.6);
+const matMuro = new THREE.MeshStandardMaterial({ map: texturaPiedra, roughness: 0.9 });
+
+const geoEscalon = new THREE.BoxGeometry(4, 0.1, 0.5); // Ajustar según diseño
+const matEscalon = new THREE.MeshStandardMaterial({ map: texturaMaderaEscaleras });
 
 texturaPiedra.wrapS = texturaPiedra.wrapT = THREE.RepeatWrapping;
 texturaPiedra.repeat.set(4, 1); // Ajusta según prefieras la densidad de la piedra
-// Configuramos la repetición para que el mármol se vea realista en la curva
-texturaMarmol.wrapS = texturaMarmol.wrapT = THREE.RepeatWrapping;
-texturaMarmol.repeat.set(8, 1);
-texturaMaderaEscaleras.wrapS = texturaMaderaEscaleras.wrapT = THREE.RepeatWrapping;
-texturaMaderaEscaleras.repeat.set(1, 1);
 
-// 2. Configuración de Raycaster para clics
+// Recursos compartidos para las pasarelas
+const geoPasarela = new THREE.BoxGeometry(4, 0.1, 0.8);
+const matPasarela = new THREE.MeshStandardMaterial({ map: texturaMarmol, roughness: 0.7 });
+
+
+// --- 4. INTERACCIÓN Y RAYCASTER ---
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
+function updateMouseCoords(event) {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+}
 
-// 3. Bloques fijos con URLs en userData
+window.addEventListener('click', updateMouseCoords);
+window.addEventListener('mousemove', updateMouseCoords);
+
+// --- 5. BLOQUES Y PUERTAS ---
 const a = 10, b = 5;
 const bloques = [];
 const datosBloques = [
@@ -38,164 +67,115 @@ const datosBloques = [
     { pos: [0, 0, -b], col: 0xff5733, url: 'https://github.com', id: 'aulas' }
 ];
 
-// Define los radios de la elipse verde antes del bucle
-const aV = 12.5;
-const bV = 7.5;
-
 datosBloques.forEach((d) => {
-  const geoPuerta = new THREE.BoxGeometry(1.2, 2.4, 0.2);
-  const matPuerta = new THREE.MeshStandardMaterial({ 
-    map: texturaPuerta, // Aplicamos la nueva textura
-    roughness: 0.8 
-  });
-  
-  const puerta = new THREE.Mesh(geoPuerta, matPuerta);
-  
-  // Posicionamiento sobre los suelos cuadrados (a=10, b=5)
-  const ySuelo = (d.id === 'profesores' || d.id === 'prefectos') ? 2.25 : -0.75;
-  let posX = d.id === 'clases' ? 10 : (d.id === 'profesores' ? -10 : 0);
-  let posZ = d.id === 'prefectos' ? 5 : (d.id === 'aulas' ? -5 : 0);
-
-  puerta.position.set(posX, ySuelo + 1.2, posZ);
-  puerta.lookAt(0, puerta.position.y, 0);
-  
-  scene.add(puerta);
-  bloques.push(puerta);
+    const puerta = new THREE.Mesh(geoPuerta, matPuerta);
+    const ySuelo = (d.id === 'profesores' || d.id === 'prefectos') ? 2.25 : -0.75;
+    let posX = d.id === 'clases' ? 10 : (d.id === 'profesores' ? -10 : 0);
+    let posZ = d.id === 'prefectos' ? 5 : (d.id === 'aulas' ? -5 : 0);
+    
+    puerta.position.set(posX, ySuelo + 1.2, posZ);
+    puerta.lookAt(0, puerta.position.y, 0);
+    puerta.userData = { url: d.url };
+    scene.add(puerta);
+    bloques.push(puerta);
 });
 
+// --- 6. FUNCIONES PROCEDIMENTALES OPTIMIZADAS ---
+function crearPasarelaPlana(pInicio, pFin, y) {
+    const grupo = new THREE.Group();
+    const pasos = 80;
+    // Radios alineados con las escaleras (punto medio entre 10 y 14)
+    const aV = 12;
+    const bV = 7;
 
-function crearPasarelaAmarillaPlana(pInicio, pFin, y) {
-  const grupo = new THREE.Group();
-  const pasos = 80;
-  const aV = 12.5; 
-  const bV = 7.5;
+    for (let i = 0; i <= pasos; i++) {
+        const t = i / pasos;
+        const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
 
-  for (let i = 0; i <= pasos; i++) {
-    const t = i / pasos;
-    const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
-    
-    const placa = new THREE.Mesh(
-      new THREE.BoxGeometry(3, 0.05, 0.5),
-      new THREE.MeshStandardMaterial({ map: texturaMarmol }) // Sustituimos el color por el mapa
-    );
+        const x = aV * Math.cos(theta);
+        const z = bV * Math.sin(theta);
 
-    placa.position.set(aV * Math.cos(theta), y, bV * Math.sin(theta));
-    placa.lookAt(aV * Math.cos(theta + 0.01), y, bV * Math.sin(theta + 0.01));
-    grupo.add(placa);
-  }
-  scene.add(grupo);
+        const tramo = new THREE.Mesh(geoPasarela, matPasarela);
+        tramo.position.set(x, y, z);
+
+        // Orientación siguiendo la curva de la elipse
+        const sigTheta = theta + 0.01;
+        tramo.lookAt(aV * Math.cos(sigTheta), y, bV * Math.sin(sigTheta));
+
+        grupo.add(tramo);
+    }
+    scene.add(grupo);
 }
 
-// Tramo Superior Llano: Conecta el fin de subida (0.25) con el inicio de bajada (0.5)
-crearPasarelaAmarillaPlana(0.25, 0.5, 2.25);
+function crearEscaleraEliptica(pInicio, pFin, yBaseInicio, yBaseFin) {
+    const grupo = new THREE.Group();
+    const pasos = 35;
+    const aV = 12; // Radio medio para el ancho de 4 (entre 10 y 14)
+    const bV = 7;  // Radio medio para el ancho de 4 (entre 5 y 9)
 
-// Tramo Inferior Llano: Conecta el fin de bajada (0.75) con el inicio de subida (1.0)
-crearPasarelaAmarillaPlana(0.75, 1.0, -0.75);
+    for (let i = 0; i <= pasos; i++) {
+        const t = i / pasos;
+        const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
 
+        const x = aV * Math.cos(theta);
+        const z = bV * Math.sin(theta);
+        const yBase = yBaseInicio + (yBaseFin - yBaseInicio) * t;
 
+        const escalon = new THREE.Mesh(geoEscalon, matEscalon);
+        escalon.position.set(x, yBase, z);
 
+        // Orientación para seguir la curva de la elipse
+        const sigTheta = theta + 0.01;
+        escalon.lookAt(aV * Math.cos(sigTheta), yBase, bV * Math.sin(sigTheta));
 
-// Función escaleras
-function crearEscaleraVerdeEliptica(pInicio, pFin, yBaseInicio, yBaseFin) {
-  const grupo = new THREE.Group(); [1]
-  const pasos = 35; [1]
-  const aV = 12.5; [2, 3]
-  const bV = 7.5; [2, 3]
-
-  for (let i = 0; i <= pasos; i++) {
-    const t = i / pasos; [1]
-    const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2; [1]
-    
-    const x = aV * Math.cos(theta); [3]
-    const z = bV * Math.sin(theta); [3]
-    const y = yBaseInicio + (yBaseFin - yBaseInicio) * t; [3]
-
-    // Material solo con textura de madera para un look natural
-    const matEscalon = new THREE.MeshStandardMaterial({ 
-      map: texturaMaderaEscaleras, 
-      roughness: 0.9 
-    }); [4]
-
-    const geoEscalon = new THREE.BoxGeometry(3, 0.1, 0.5); [2, 4]
-    const escalon = new THREE.Mesh(geoEscalon, matEscalon); [4]
-    
-    escalon.position.set(x, y, z); [5]
-    
-    // Orientación para seguir la curva de la elipse
-    const sigTheta = theta + 0.01;
-    escalon.lookAt(aV * Math.cos(sigTheta), y, bV * Math.sin(sigTheta)); [5]
-    
-    grupo.add(escalon); [1]
-  }
-  scene.add(grupo); [1, 5]
+        grupo.add(escalon);
+    }
+    scene.add(grupo);
 }
 
-// Tramo del Bloque 1 al 3 (Scroll 0 a 0.25) - SUBIDA
-crearEscaleraVerdeEliptica(0, 0.25, -0.75, 2.25);
+function crearMurallaExterior(pInicio, pFin, y1, y2) {
+    const grupo = new THREE.Group();
+    const pasos = 250;
+    const aW = 14, bW = 9; // Radios exteriores
 
-// Tramo del Bloque 2 al 4 (Scroll 0.5 a 0.75) - BAJADA
-crearEscaleraVerdeEliptica(0.5, 0.75, 2.25, -0.75);
+    for (let i = 0; i <= pasos; i++) {
+        const t = i / pasos;
+        const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
+        const x = aW * Math.cos(theta);
+        const z = bW * Math.sin(theta);
+        const yBase = y1 + (y2 - y1) * t;
 
-// function crearMurallaExterior(pInicio, pFin, y1, y2) {
-//     const grupo = new THREE.Group();
-//     const pasos = 250;
-//     // Radios exteriores (aV + 1.5 para estar fuera del ancho 3) [1, 2]
-//     const aW = 14, bW = 9;
+        // Reutilización de mallas
+        const muro = new THREE.Mesh(geoMuro, matMuro);
+        muro.position.set(x, yBase + 1, z);
+        muro.lookAt(0, muro.position.y, 0); // Orientación radial al centro
+        grupo.add(muro);
+    }
+    scene.add(grupo);
+}
 
-//     for (let i = 0; i <= pasos; i++) {
-//         const t = i / pasos;
-//         const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
-//         const x = aW * Math.cos(theta);
-//         const z = bW * Math.sin(theta);
-//         const yBase = y1 + (y2 - y1) * t;
+// Inicialización de estructuras
+crearPasarelaPlana(0.23, 0.53, 2.25);
+crearPasarelaPlana(0.71, 1.3, -0.75);
 
-//         // Muralla de altura 2
-//         const muro = new THREE.Mesh(
-//             new THREE.BoxGeometry(0.1, 2, 0.6),
-//             new THREE.MeshStandardMaterial({
-//                 map: texturaPiedra, // Aplicamos la textura [2]
-//                 roughness: 0.9
-//             })
-//         );
-//         // Posicionamos el centro a +1 para que la base toque la pasarela
-//         muro.position.set(x, yBase + 1, z);
-//         muro.lookAt(0, muro.position.y, 0);
-//         grupo.add(muro);
-//     }
-//     scene.add(grupo);
-// }
+crearEscaleraEliptica(0.04, 0.23, -0.75, 2.25);
+crearEscaleraEliptica(0.54, 0.73, 2.25, -0.75);
 
-// // Aplicar muralla a todo el circuito sincronizado con las alturas [2, 3]
-// crearMurallaExterior(0, 0.25, -1.75, 1.25);    // Tramo Subida Verde
-// crearMurallaExterior(0.25, 0.5, 1.25, 1.25);   // Tramo Llano Amarillo Superior
-// crearMurallaExterior(0.5, 0.75, 1.25, -1.75);  // Tramo Bajada Verde
-// crearMurallaExterior(0.75, 1.0, -1.75, -1.75); // Tramo Llano Amarillo Inferior
+crearMurallaExterior(0, 0.25, -1.75, 1.25);    
+crearMurallaExterior(0.25, 0.5, 1.25, 1.25);   
+crearMurallaExterior(0.5, 0.75, 1.25, -1.75);  
+crearMurallaExterior(0.75, 1.0, -1.75, -1.75); 
 
-// 1. Crear geometría de cilindro abierto (sin tapas)
-const radioBase = a; // Usamos el radio mayor de 10 [1]
-const alturaCilindro = 10;
-const geoCilindro = new THREE.CylinderGeometry(radioBase, radioBase, alturaCilindro, 64, 1, true);
-
-// 2. Material con doble cara para que se vea el interior
-const matCilindro = new THREE.MeshStandardMaterial({ 
-  map: texturaPiedra,
-  side: THREE.DoubleSide, 
-  
-  roughness: 0.8
-});
-
-const cilindroHueco = new THREE.Mesh(geoCilindro, matCilindro);
-
-// 3. Transformar en elipse ajustando la escala Z (b/a = 5/10 = 0.5)
-cilindroHueco.scale.set(1, 1, b / a);
-
-// 4. Posicionar (centrado entre el nivel -0.75 y 3)
-cilindroHueco.position.set(0, 1.125, 0);
-
-scene.add(cilindroHueco);
+// --- 7. CILINDRO CENTRAL ---
+const geoCilindro = new THREE.CylinderGeometry(a, a, 10, 64, 1, true);
+const matCilindro = new THREE.MeshStandardMaterial({ map: texturaPiedra, side: THREE.DoubleSide, roughness: 0.8 });
+const cilindroCentral = new THREE.Mesh(geoCilindro, matCilindro);
+cilindroCentral.scale.set(1, 1, b / a);
+cilindroCentral.position.set(0, 1.125, 0);
+scene.add(cilindroCentral);
 
 
-// 4. Recorrido Elíptico Sincronizado
+// 8. Recorrido Elíptico Sincronizado
 const puntosEsquiva = [];
 const segmentos = 300;
 const aCamara = 12.5; // Radio elipse verde en X (a + 2.5)
@@ -227,14 +207,21 @@ for (let i = 0; i <= segmentos; i++) {
 }
 
 
-// 5. Iluminación
-scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-const luz = new THREE.DirectionalLight(0xffffff, 1.5);
-luz.position.set(0, 10, 5);
-scene.add(luz);
+// --- 9. ILUMINACIÓN (OPTIMIZADA) ---
+function initLighting() {
+    // A. Luz de hemisferio: aporta profundidad (color cielo, color suelo, intensidad)
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.0);
+    scene.add(hemiLight);
+
+    // B. Luz direccional: resalta las texturas y relieves de piedra/madera
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(5, 10, 7.5);
+    scene.add(dirLight);
+}
+initLighting();
 
 
-// 6. Animación Scroll y Cámara
+// --- 9. ANIMACIÓN Y SCROLL (GSAP) ---
 const scrollData = { progreso: 0 };
 gsap.to(scrollData, {
     progreso: 1,
@@ -268,24 +255,6 @@ window.addEventListener('click', (event) => {
 
 });
 
-
-// Mover scroll a objeto al hacer clic en menú
-window.irAObjeto = (id) => {
-    console.log("irAObjeto run con id:" + id);
-
-
-    const indices = { 'clases': 0, 'profesores': 0.5, 'prefectos': 0.25, 'aulas': 0.75 };
-    const progresoDestino = indices[id];
-
-    // Desplazamos el scroll de la página
-    window.scrollTo({
-        top: progresoDestino * (document.body.scrollHeight - window.innerHeight),
-        behavior: 'smooth'
-    });
-
-};
-
-
 // Cambiar el cursor al pasar sobre un bloque
 window.addEventListener('mousemove', (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -300,12 +269,24 @@ window.addEventListener('mousemove', (event) => {
 
 });
 
-// 8. Redimensionamiento y Loop
+// --- 10. EVENTOS Y LOOP ---
+let resizeTimeout;
 window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    // Cancelamos el redimensionamiento previo si el evento sigue disparándose
+    clearTimeout(resizeTimeout);
+
+    resizeTimeout = setTimeout(() => {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+
+        console.log('Resolución ajustada:', width, 'x', height);
+    }, 150); // 150ms es el tiempo ideal para evitar sobrecarga en móviles
 });
+
 
 
 function animate() {
