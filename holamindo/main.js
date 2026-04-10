@@ -8,6 +8,20 @@ const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+const loader = new THREE.TextureLoader();
+const texturaPiedra = loader.load('assets/textures/castle_wall_1k.jpg');
+const texturaMarmol = loader.load('assets/textures/marble_01_diff_1k.jpg');
+const texturaMaderaEscaleras = loader.load('assets/textures/wood_table_worn_1k.jpg');
+const texturaPuerta = loader.load('assets/textures/wood_planks_dirt_1k.jpg');
+
+
+texturaPiedra.wrapS = texturaPiedra.wrapT = THREE.RepeatWrapping;
+texturaPiedra.repeat.set(4, 1); // Ajusta según prefieras la densidad de la piedra
+// Configuramos la repetición para que el mármol se vea realista en la curva
+texturaMarmol.wrapS = texturaMarmol.wrapT = THREE.RepeatWrapping;
+texturaMarmol.repeat.set(8, 1);
+texturaMaderaEscaleras.wrapS = texturaMaderaEscaleras.wrapT = THREE.RepeatWrapping;
+texturaMaderaEscaleras.repeat.set(1, 1);
 
 // 2. Configuración de Raycaster para clics
 const raycaster = new THREE.Raycaster();
@@ -25,63 +39,48 @@ const datosBloques = [
 ];
 
 // Define los radios de la elipse verde antes del bucle
-const aV = 12.5; 
+const aV = 12.5;
 const bV = 7.5;
 
 datosBloques.forEach((d) => {
-  // 1. Crear el suelo cuadrado de 3x3
-  const geoSuelo = new THREE.BoxGeometry(3, 0.1, 3);
-  const matSuelo = new THREE.MeshStandardMaterial({ 
-    color: d.col, 
-    transparent: true, 
-    opacity: 0.8 
+  const geoPuerta = new THREE.BoxGeometry(1.2, 2.4, 0.2);
+  const matPuerta = new THREE.MeshStandardMaterial({ 
+    map: texturaPuerta, // Aplicamos la nueva textura
+    roughness: 0.8 
   });
-  const suelo = new THREE.Mesh(geoSuelo, matSuelo);
-
-  // 2. Posicionar el centro en los vértices interiores [1]
-  // d.pos contiene exactamente [a, 0, 0], [-a, 3, 0], etc.
-  suelo.position.set(d.pos[0], d.pos[1] -0.8, d.pos[2]);
-  scene.add(suelo);
-
-  // 3. Posicionar la puerta justo encima del suelo
-  const geoPuerta = new THREE.BoxGeometry(1.2, 2.4, 0.2); [2]
-  const matPuerta = new THREE.MeshStandardMaterial({ color: d.col });
+  
   const puerta = new THREE.Mesh(geoPuerta, matPuerta);
+  
+  // Posicionamiento sobre los suelos cuadrados (a=10, b=5)
+  const ySuelo = (d.id === 'profesores' || d.id === 'prefectos') ? 2.25 : -0.75;
+  let posX = d.id === 'clases' ? 10 : (d.id === 'profesores' ? -10 : 0);
+  let posZ = d.id === 'prefectos' ? 5 : (d.id === 'aulas' ? -5 : 0);
 
-// La base de la puerta (alto 2.4) queda en d.pos[1] al sumar 1.2 [2]
-  puerta.position.set(d.pos[0], d.pos[1] + 0.45, d.pos[2]);
+  puerta.position.set(posX, ySuelo + 1.2, posZ);
   puerta.lookAt(0, puerta.position.y, 0);
-
+  
   scene.add(puerta);
   bloques.push(puerta);
 });
 
+
 function crearPasarelaAmarillaPlana(pInicio, pFin, y) {
   const grupo = new THREE.Group();
-  const pasos = 80; // Más pasos para una curva más suave
-  const aV = 12.5;  // Radio X elipse verde
-  const bV = 7.5;   // Radio Z elipse verde
-  const ancho = 3;  // Ancho de la plataforma plana
+  const pasos = 80;
+  const aV = 12.5; 
+  const bV = 7.5;
 
   for (let i = 0; i <= pasos; i++) {
     const t = i / pasos;
     const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
     
-    const x = aV * Math.cos(theta);
-    const z = bV * Math.sin(theta);
-
-    // Geometría plana: ancho, altura casi nula (0.05) y profundidad solapada (0.5)
     const placa = new THREE.Mesh(
-      new THREE.BoxGeometry(ancho, 0.05, 0.5),
-      new THREE.MeshStandardMaterial({ color: 0xffff00 })
+      new THREE.BoxGeometry(3, 0.05, 0.5),
+      new THREE.MeshStandardMaterial({ map: texturaMarmol }) // Sustituimos el color por el mapa
     );
 
-    placa.position.set(x, y, z);
-    
-    // Orientación tangencial para seguir la elipse
-    const sigTheta = theta + 0.01;
-    placa.lookAt(aV * Math.cos(sigTheta), y, bV * Math.sin(sigTheta));
-    
+    placa.position.set(aV * Math.cos(theta), y, bV * Math.sin(theta));
+    placa.lookAt(aV * Math.cos(theta + 0.01), y, bV * Math.sin(theta + 0.01));
     grupo.add(placa);
   }
   scene.add(grupo);
@@ -98,38 +97,37 @@ crearPasarelaAmarillaPlana(0.75, 1.0, -0.75);
 
 // Función escaleras
 function crearEscaleraVerdeEliptica(pInicio, pFin, yBaseInicio, yBaseFin) {
-    const grupo = new THREE.Group();
-    const pasos = 35;
+  const grupo = new THREE.Group(); [1]
+  const pasos = 35; [1]
+  const aV = 12.5; [2, 3]
+  const bV = 7.5; [2, 3]
 
-    // Coordenadas de la elipse verde (a + 2.5 y b + 2.5)
-    const aVerde = 12.5;
-    const bVerde = 7.5;
+  for (let i = 0; i <= pasos; i++) {
+    const t = i / pasos; [1]
+    const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2; [1]
+    
+    const x = aV * Math.cos(theta); [3]
+    const z = bV * Math.sin(theta); [3]
+    const y = yBaseInicio + (yBaseFin - yBaseInicio) * t; [3]
 
-    for (let i = 0; i <= pasos; i++) {
-        const t = i / pasos;
-        const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
+    // Material solo con textura de madera para un look natural
+    const matEscalon = new THREE.MeshStandardMaterial({ 
+      map: texturaMaderaEscaleras, 
+      roughness: 0.9 
+    }); [4]
 
-        // X y Z de la elipse verde
-        const x = aVerde * Math.cos(theta);
-        const z = bVerde * Math.sin(theta);
-
-        // Y de la "blanca" (empezando en su nivel -0.75 hasta el bloque elevado)
-        const y = yBaseInicio + (yBaseFin - yBaseInicio) * t;
-
-        const peldaño = new THREE.Mesh(
-            new THREE.BoxGeometry(2.5, 0.1, 1),
-            new THREE.MeshStandardMaterial({ color: 0x00ff00 }) // Color Verde
-        );
-
-        peldaño.position.set(x, y, z);
-
-        // Orientación siguiendo la elipse verde
-        const sigTheta = theta + 0.01;
-        peldaño.lookAt(aVerde * Math.cos(sigTheta), y, bVerde * Math.sin(sigTheta));
-
-        grupo.add(peldaño);
-    }
-    scene.add(grupo);
+    const geoEscalon = new THREE.BoxGeometry(3, 0.1, 0.5); [2, 4]
+    const escalon = new THREE.Mesh(geoEscalon, matEscalon); [4]
+    
+    escalon.position.set(x, y, z); [5]
+    
+    // Orientación para seguir la curva de la elipse
+    const sigTheta = theta + 0.01;
+    escalon.lookAt(aV * Math.cos(sigTheta), y, bV * Math.sin(sigTheta)); [5]
+    
+    grupo.add(escalon); [1]
+  }
+  scene.add(grupo); [1, 5]
 }
 
 // Tramo del Bloque 1 al 3 (Scroll 0 a 0.25) - SUBIDA
@@ -138,60 +136,63 @@ crearEscaleraVerdeEliptica(0, 0.25, -0.75, 2.25);
 // Tramo del Bloque 2 al 4 (Scroll 0.5 a 0.75) - BAJADA
 crearEscaleraVerdeEliptica(0.5, 0.75, 2.25, -0.75);
 
-function crearMurallaExterior(pInicio, pFin, y1, y2) {
-  const grupo = new THREE.Group();
-  const pasos = 250;
-  // Radios exteriores (aV + 1.5 para estar fuera del ancho 3) [1, 2]
-  const aW = 14, bW = 9; 
+// function crearMurallaExterior(pInicio, pFin, y1, y2) {
+//     const grupo = new THREE.Group();
+//     const pasos = 250;
+//     // Radios exteriores (aV + 1.5 para estar fuera del ancho 3) [1, 2]
+//     const aW = 14, bW = 9;
 
-  for (let i = 0; i <= pasos; i++) {
-    const t = i / pasos;
-    const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
-    const x = aW * Math.cos(theta);
-    const z = bW * Math.sin(theta);
-    const yBase = y1 + (y2 - y1) * t;
+//     for (let i = 0; i <= pasos; i++) {
+//         const t = i / pasos;
+//         const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
+//         const x = aW * Math.cos(theta);
+//         const z = bW * Math.sin(theta);
+//         const yBase = y1 + (y2 - y1) * t;
 
-    // Muralla de altura 2
-    const muro = new THREE.Mesh(
-      new THREE.BoxGeometry(0.1, 1, 0.6), 
-      new THREE.MeshStandardMaterial({ color: 0x333333 })
-    );
-    // Posicionamos el centro a +1 para que la base toque la pasarela
-    muro.position.set(x, yBase + 1, z); 
-    muro.lookAt(0, muro.position.y, 0);
-    grupo.add(muro);
-  }
-  scene.add(grupo);
-}
+//         // Muralla de altura 2
+//         const muro = new THREE.Mesh(
+//             new THREE.BoxGeometry(0.1, 2, 0.6),
+//             new THREE.MeshStandardMaterial({
+//                 map: texturaPiedra, // Aplicamos la textura [2]
+//                 roughness: 0.9
+//             })
+//         );
+//         // Posicionamos el centro a +1 para que la base toque la pasarela
+//         muro.position.set(x, yBase + 1, z);
+//         muro.lookAt(0, muro.position.y, 0);
+//         grupo.add(muro);
+//     }
+//     scene.add(grupo);
+// }
 
-// Aplicar muralla a todo el circuito sincronizado con las alturas [2, 3]
-crearMurallaExterior(0, 0.25, -1.75, 1.25);    // Tramo Subida Verde
-crearMurallaExterior(0.25, 0.5, 1.25, 1.25);   // Tramo Llano Amarillo Superior
-crearMurallaExterior(0.5, 0.75, 1.25, -1.75);  // Tramo Bajada Verde
-crearMurallaExterior(0.75, 1.0, -1.75, -1.75); // Tramo Llano Amarillo Inferior
+// // Aplicar muralla a todo el circuito sincronizado con las alturas [2, 3]
+// crearMurallaExterior(0, 0.25, -1.75, 1.25);    // Tramo Subida Verde
+// crearMurallaExterior(0.25, 0.5, 1.25, 1.25);   // Tramo Llano Amarillo Superior
+// crearMurallaExterior(0.5, 0.75, 1.25, -1.75);  // Tramo Bajada Verde
+// crearMurallaExterior(0.75, 1.0, -1.75, -1.75); // Tramo Llano Amarillo Inferior
 
 // 1. Crear geometría de cilindro abierto (sin tapas)
 const radioBase = a; // Usamos el radio mayor de 10 [1]
-const alturaCilindro = 10; 
-const geoCilindro = new THREE.CylinderGeometry(radioBase, radioBase, alturaCilindro, 64, 1, true); 
+const alturaCilindro = 10;
+const geoCilindro = new THREE.CylinderGeometry(radioBase, radioBase, alturaCilindro, 64, 1, true);
 
 // 2. Material con doble cara para que se vea el interior
 const matCilindro = new THREE.MeshStandardMaterial({ 
-  color: 0xff00ff, 
+  map: texturaPiedra,
   side: THREE.DoubleSide, 
-  transparent: true, 
-  opacity: 1 
-}); 
+  
+  roughness: 0.8
+});
 
-const cilindroHueco = new THREE.Mesh(geoCilindro, matCilindro); 
+const cilindroHueco = new THREE.Mesh(geoCilindro, matCilindro);
 
 // 3. Transformar en elipse ajustando la escala Z (b/a = 5/10 = 0.5)
-cilindroHueco.scale.set(1, 1, b / a); 
+cilindroHueco.scale.set(1, 1, b / a);
 
 // 4. Posicionar (centrado entre el nivel -0.75 y 3)
-cilindroHueco.position.set(0, 1.125, 0); 
+cilindroHueco.position.set(0, 1.125, 0);
 
-scene.add(cilindroHueco); 
+scene.add(cilindroHueco);
 
 
 // 4. Recorrido Elíptico Sincronizado
