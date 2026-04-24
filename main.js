@@ -8,20 +8,19 @@ const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// --- 2. GESTIÓN DE TEXTURAS (OPTIMIZADO) ---
+// --- 2. GESTIÓN DE TEXTURAS Y PANTALLA DE CARGA ---
 const loadingScreen = document.getElementById('loading-screen');
 const progressText = document.getElementById('progress-text');
 
 const loadingManager = new THREE.LoadingManager();
 loadingManager.onStart = () => console.log('Cargando texturas...');
 
-// Actualiza el porcentaje en pantalla
+// Pantalla de carga
 loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
     const progress = Math.round((itemsLoaded / itemsTotal) * 100);
     progressText.innerText = `Cargando: ${progress}%`;
 };
 
-// Oculta la pantalla al terminar
 loadingManager.onLoad = () => {
     loadingScreen.style.transition = 'opacity 0.5s ease';
     loadingScreen.style.opacity = '0';
@@ -31,7 +30,7 @@ loadingManager.onLoad = () => {
 
 const loader = new THREE.TextureLoader(loadingManager);
 
-const texturaPiedra = loader.load('assets/textures/castle_wall_1k.jpg');
+const texturaPiedra = loader.load('assets/textures/castle_wall_4k.jpg');
 const texturaMarmol = loader.load('assets/textures/marble_01_diff_1k.jpg');
 const texturaMaderaEscaleras = loader.load('assets/textures/wood_table_worn_1k.jpg');
 const texturaPuerta = loader.load('assets/textures/wood_planks_dirt_1k.jpg');
@@ -41,7 +40,7 @@ const texturaPuerta = loader.load('assets/textures/wood_planks_dirt_1k.jpg');
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
 });
 texturaPiedra.repeat.set(4, 1);
-texturaMarmol.repeat.set(8, 1);
+texturaMarmol.repeat.set(16, 1);
 
 // --- 3. GEOMETRÍAS Y MATERIALES COMPARTIDOS (OPTIMIZACIÓN DE MEMORIA) ---
 
@@ -67,35 +66,69 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 function updateMouseCoords(event) {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    mouse.x = (event.clientX / globalThis.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / globalThis.innerHeight) * 2 + 1;
 }
 
-window.addEventListener('click', updateMouseCoords);
-window.addEventListener('mousemove', updateMouseCoords);
+globalThis.addEventListener('click', updateMouseCoords);
+globalThis.addEventListener('mousemove', updateMouseCoords);
 
 // --- 5. BLOQUES Y PUERTAS ---
 const a = 10, b = 5;
 const bloques = [];
 const datosBloques = [
-    { pos: [a, 0, 0], col: 0xfabada, url: 'https://google.com', id: 'clases' },
-    { pos: [-a, 3, 0], col: 0x44aa88, url: 'https://threejs.org', id: 'profesores' },
-    { pos: [0, 3, b], col: 0x2266dd, url: 'https://greensock.com', id: 'prefectos' },
-    { pos: [0, 0, -b], col: 0xff5733, url: 'https://github.com', id: 'aulas' }
+    { pos: [a, 0, 0], id: 'clases'},
+    { pos: [-a, 3, 0], id: 'personal' },
+    { pos: [0, 3, b], id: 'jefes' },
+    { pos: [0, 0, -b], id: 'premios' }
 ];
 
 datosBloques.forEach((d) => {
     const puerta = new THREE.Mesh(geoPuerta, matPuerta);
-    const ySuelo = (d.id === 'profesores' || d.id === 'prefectos') ? 2.25 : -0.75;
-    let posX = d.id === 'clases' ? 10 : (d.id === 'profesores' ? -10 : 0);
-    let posZ = d.id === 'prefectos' ? 5 : (d.id === 'aulas' ? -5 : 0);
+    const ySuelo = (d.id === 'personal' || d.id === 'jefes') ? 2.25 : -0.75;
+    let posX;
+    if (d.id === 'clases') {
+        posX = 10;
+    } else if (d.id === 'personal') {
+        posX = -10;
+    } else {
+        posX = 0;
+    }
+    let posZ;
+    if (d.id === 'jefes') {
+        posZ = 5;
+    } else if (d.id === 'premios') {
+        posZ = -5;
+    } else {
+        posZ = 0;
+    }
 
     puerta.position.set(posX, ySuelo + 1.2, posZ);
     puerta.lookAt(0, puerta.position.y, 0);
-    puerta.userData = { url: d.url };
+    puerta.userData = { id: d.id };
     scene.add(puerta);
     bloques.push(puerta);
 });
+
+// --- 5.1 CONTENIDOS PARA EL ELEMENTO .INFO ---
+const contenidosInfo = {
+    'clases': `
+        <h2>Nuestras Clases</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+    `,
+    'personal': `
+        <h2>Personal</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    `,
+    'jefes': `
+        <h2>Jefes de las casas</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+    `,
+    'premios': `
+        <h2>Premios anuales</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    `
+};
 
 // --- 6. FUNCIONES PROCEDIMENTALES OPTIMIZADAS ---
 function crearPasarelaPlana(pInicio, pFin, y) {
@@ -227,7 +260,7 @@ for (let i = 0; i <= segmentos; i++) {
 // --- 9. ILUMINACIÓN (OPTIMIZADA) ---
 function initLighting() {
     // A. Luz de hemisferio: aporta profundidad (color cielo, color suelo, intensidad)
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.0);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
     scene.add(hemiLight);
 
     // B. Luz direccional: resalta las texturas y relieves de piedra/madera
@@ -251,29 +284,36 @@ gsap.to(scrollData, {
     onUpdate: () => {
         const index = Math.floor(scrollData.progreso * segmentos) % segmentos;
         camera.position.copy(puntosEsquiva[index]);
-        camera.lookAt(0, 0, 0);
+        camera.lookAt(0, 2, 0);
     }
 });
 
-// 7. Evento de Clic
-window.addEventListener('click', (event) => {
+// --- 10. EVENTO DE CLIC (ACTUALIZADO CON CONTENIDO DINÁMICO) ---
+globalThis.addEventListener('click', (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-
     raycaster.setFromCamera(mouse, camera);
-    const intersectados = raycaster.intersectObjects(bloques);
+    const intersects = raycaster.intersectObjects(bloques);
 
-    // Debes usar  para acceder a la primera colisión detectada
-    if (intersectados.length > 0) {
-        const url = intersectados[0].object.userData.url;
-        window.open(url, '_blank');
+    if (intersects.length > 0) {
+        const puertaClicada = intersects[0].object;
+        console.log(puertaClicada.userData.id);
+        const idPuerta = puertaClicada.userData.id;
+        console.log(contenidosInfo[idPuerta]);
+        
+        const infoElement = document.querySelector('.info');
+        if (infoElement && contenidosInfo[idPuerta]) {
+            // Inyectamos el HTML correspondiente del array/objeto contenidosInfo
+            document.querySelector('.block-info').innerHTML = contenidosInfo[idPuerta];
+            infoElement.style.opacity = 1;
+            infoElement.style.pointerEvents = 'auto';
+        }
     }
-
 });
 
 // Cambiar el cursor al pasar sobre un bloque
-window.addEventListener('mousemove', (event) => {
+globalThis.addEventListener('mousemove', (event) => {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -286,7 +326,7 @@ window.addEventListener('mousemove', (event) => {
 
 });
 
-// --- 10. EVENTOS Y LOOP ---
+// --- 11. EVENTOS Y LOOP ---
 let resizeTimeout;
 window.addEventListener('resize', () => {
     // Cancelamos el redimensionamiento previo si el evento sigue disparándose

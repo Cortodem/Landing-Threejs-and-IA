@@ -24,7 +24,7 @@
     </div>
 
 
-    <nav style="position: fixed; top: 20px; left: 20px; z-index: 100;">
+    <nav style="position: fixed; top: 20px; left: 20px; z-index: 2;">
         <button onclick="irAObjeto('clases')">Clases</button>
         <button onclick="irAObjeto('personal')">Personal</button>
         <button onclick="irAObjeto('jefes')">Jefes de las casas</button>
@@ -33,12 +33,12 @@
 
     <!-- <header class="info">
         <nav class="menu nav">
-            <ul>
-                <li><a href="#clases">Clases</a></li>
-                <li><a href="#jefes">jefes</a></li>
-                <li><a href="#personal">personal</a></li>
-                <li><a href="#premios">premios</a></li>
-            </ul>
+            <nav style="display: flex; flex-direction: column; gap: .5em; position: fixed; top: 50%; left: 20px; z-index: 100;">
+                <button onclick="irAObjeto('clases')">Clases</button>
+                <button onclick="irAObjeto('personal')">Personal</button>
+                <button onclick="irAObjeto('jefes')">Jefes de las casas</button>
+                <button onclick="irAObjeto('premios')">Premios anuales</button>
+            </nav>
         </nav>
 
         <nav class="menu social">
@@ -57,20 +57,11 @@
     </header> -->
 
     <main>
-        <!-- <section class="department">
-            <div class="dep" id="clases">
-                <h2>Clases</h2>
-            </div>
-            <div class="dep" id="jefes">
-                <h2>jefes</h2>
-            </div>
-            <div class="dep" id="personal">
-                <h2>personal</h2>
-            </div>
-            <div class="dep" id="premios">
-                <h2>premios</h2>
-            </div>
-        </section> -->
+        <section class="info">
+            <div class="block-info"></div>
+
+            <div><button onclick="closeInfo()" style="padding: 100px;">X</button></div>
+        </section>
     </main>
 
     <script type="importmap">
@@ -87,20 +78,27 @@
     <script type="module" src="main.js"></script>
     <script>
         // Mover scroll a objeto al hacer clic en menú
-        window.irAObjeto = (id) => {
+        globalThis.irAObjeto = (id) => {
             console.log("irAObjeto run con id:" + id);
 
 
             const indices = { 'clases': 0, 'jefes': 0.5, 'personal': 0.25, 'premios': 0.75 };
             const progresoDestino = indices[id];
 
-            // Desplazamos el scroll de la página
             window.scrollTo({
                 top: progresoDestino * (document.body.scrollHeight - window.innerHeight),
                 behavior: 'smooth'
             });
-
         };
+
+        //Cerrar información
+        function closeInfo() {
+            const infoElement = document.querySelector('.info');
+            if (infoElement) {
+                infoElement.style.opacity = 0;
+                infoElement.style.pointerEvents = 'none';
+            }
+        }
     </script>
 </body>
 
