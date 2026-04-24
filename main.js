@@ -9,9 +9,26 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // --- 2. GESTIÓN DE TEXTURAS (OPTIMIZADO) ---
+const loadingScreen = document.getElementById('loading-screen');
+const progressText = document.getElementById('progress-text');
+
 const loadingManager = new THREE.LoadingManager();
 loadingManager.onStart = () => console.log('Cargando texturas...');
-loadingManager.onLoad = () => console.log('¡Todas las texturas listas!');
+
+// Actualiza el porcentaje en pantalla
+loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+    const progress = Math.round((itemsLoaded / itemsTotal) * 100);
+    progressText.innerText = `Cargando: ${progress}%`;
+};
+
+// Oculta la pantalla al terminar
+loadingManager.onLoad = () => {
+    loadingScreen.style.transition = 'opacity 0.5s ease';
+    loadingScreen.style.opacity = '0';
+    setTimeout(() => loadingScreen.remove(), 500);
+    console.log('¡Todas las texturas listas!');
+};
+
 const loader = new THREE.TextureLoader(loadingManager);
 
 const texturaPiedra = loader.load('assets/textures/castle_wall_1k.jpg');
@@ -72,7 +89,7 @@ datosBloques.forEach((d) => {
     const ySuelo = (d.id === 'profesores' || d.id === 'prefectos') ? 2.25 : -0.75;
     let posX = d.id === 'clases' ? 10 : (d.id === 'profesores' ? -10 : 0);
     let posZ = d.id === 'prefectos' ? 5 : (d.id === 'aulas' ? -5 : 0);
-    
+
     puerta.position.set(posX, ySuelo + 1.2, posZ);
     puerta.lookAt(0, puerta.position.y, 0);
     puerta.userData = { url: d.url };
@@ -161,10 +178,10 @@ crearPasarelaPlana(0.71, 1.3, -0.75);
 crearEscaleraEliptica(0.04, 0.23, -0.75, 2.25);
 crearEscaleraEliptica(0.54, 0.73, 2.25, -0.75);
 
-crearMurallaExterior(0, 0.25, -1.75, 1.25);    
-crearMurallaExterior(0.25, 0.5, 1.25, 1.25);   
-crearMurallaExterior(0.5, 0.75, 1.25, -1.75);  
-crearMurallaExterior(0.75, 1.0, -1.75, -1.75); 
+crearMurallaExterior(0, 0.25, -1.75, 1.25);
+crearMurallaExterior(0.25, 0.5, 1.25, 1.25);
+crearMurallaExterior(0.5, 0.75, 1.25, -1.75);
+crearMurallaExterior(0.75, 1, -1.75, -1.75);
 
 // --- 7. CILINDRO CENTRAL ---
 const geoCilindro = new THREE.CylinderGeometry(a, a, 10, 64, 1, true);

@@ -18,21 +18,26 @@
 </head>
 
 <body>
+    <div id="loading-screen"
+        style="position: fixed; width: 100%; height: 100%; background: #000; color: white; display: flex; align-items: center; justify-content: center; z-index: 9999;">
+        <h1 id="progress-text">Cargando: 0%</h1>
+    </div>
+
 
     <nav style="position: fixed; top: 20px; left: 20px; z-index: 100;">
         <button onclick="irAObjeto('clases')">Clases</button>
-        <button onclick="irAObjeto('prefectos')">Prefectos</button>
-        <button onclick="irAObjeto('profesores')">Profesores</button>
-        <button onclick="irAObjeto('aulas')">Aulas</button>
+        <button onclick="irAObjeto('personal')">Personal</button>
+        <button onclick="irAObjeto('jefes')">Jefes de las casas</button>
+        <button onclick="irAObjeto('premios')">Premios anuales</button>
     </nav>
 
     <!-- <header class="info">
         <nav class="menu nav">
             <ul>
                 <li><a href="#clases">Clases</a></li>
-                <li><a href="#profesores">Profesores</a></li>
-                <li><a href="#prefectos">Prefectos</a></li>
-                <li><a href="#aulas">Aulas</a></li>
+                <li><a href="#jefes">jefes</a></li>
+                <li><a href="#personal">personal</a></li>
+                <li><a href="#premios">premios</a></li>
             </ul>
         </nav>
 
@@ -56,14 +61,14 @@
             <div class="dep" id="clases">
                 <h2>Clases</h2>
             </div>
-            <div class="dep" id="profesores">
-                <h2>Profesores</h2>
+            <div class="dep" id="jefes">
+                <h2>jefes</h2>
             </div>
-            <div class="dep" id="prefectos">
-                <h2>Prefectos</h2>
+            <div class="dep" id="personal">
+                <h2>personal</h2>
             </div>
-            <div class="dep" id="aulas">
-                <h2>Aulas</h2>
+            <div class="dep" id="premios">
+                <h2>premios</h2>
             </div>
         </section> -->
     </main>
@@ -86,7 +91,7 @@
             console.log("irAObjeto run con id:" + id);
 
 
-            const indices = { 'clases': 0, 'profesores': 0.5, 'prefectos': 0.25, 'aulas': 0.75 };
+            const indices = { 'clases': 0, 'jefes': 0.5, 'personal': 0.25, 'premios': 0.75 };
             const progresoDestino = indices[id];
 
             // Desplazamos el scroll de la página
