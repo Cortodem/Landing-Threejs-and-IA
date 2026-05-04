@@ -135,222 +135,6 @@ datosBloques.forEach((d) => {
     bloques.push(puerta);
 });
 
-// --- 5.1 CONTENIDOS PARA EL ELEMENTO .INFO ---
-const contenidosInfo = {
-    'clases': `  <section class="section">
-
-    <section class="container contenido"><div class="row active-with-click">
-      
-      
-        <div class="demo-box"> <span>CLASES</span></div>
-
-    <section class="clasess container contenido"><div class="row active-with-click">
-<style="margin-left:320px" 
-      
-      
-      <div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-        <h2><span>Gea V. Marai</span><strong>Adivinación <img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://imgur.com/rFIfKHG.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-        El péndulo y la fortuna</h4>
-        <a class="link" target="_blank" href="https://harrypotterhead.com/foro/adivinacion/adivinacion-el-pendulo-y-la-fortuna-todos-los-cursos/msg220026/#msg220026">Ir a clase</a></div></article></div>
-      
-      <!--<div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-        <h2><span>Fae Dalarce</span><strong>Aritmancia <img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://i.imgur.com/b1fK5CN.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-        Los fundamentos</h4>
-        <a class="link" target="_blank" href="https://harrypotterhead.com/foro/aritmancia/aritmancia-los-fundamentos-de-la-aritmancia-aplicada-todos-los-cursos/msg190745/#msg190745">Ir a clase</a></div></article></div>
-      
-<div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-        <h2><span>Alessandro McDowell</span><strong>Astronomía<img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://i.imgur.com/ep0u2fG.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-        El quiebre secreto</h4><a class="link" target="_blank" href="https://harrypotterhead.com/foro/astronomia/astronomia-alessandro-y-el-quiebre-secreto-todos-los-anos/msg175522/#msg175522">Ir a clase</a></div></article></div>
-       
-      <div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-        <h2><span>Magnus Greengrass</span><strong>Cuidado Criaturas Mágicas<img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://i.imgur.com/AdTLsEc.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-        Gnomos</h4><a class="link" target="_blank" href="https://harrypotterhead.com/foro/c-criaturas-magicas/cuidado-de-criaturas-magicas-gnomos-todos-los-anos/msg191578/#msg191578">Ir a clase</a></div></article></div>-->
-      
-      <div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-        <h2><span>Jin Kleverk</span><strong>Defensa Artes Oscuras <img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://i.imgur.com/PpulvDC.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-        Defensas de luz</h4><a class="link" target="_blank" href="https://harrypotterhead.com/foro/defensa-contra-artes-oscuras/dcao-defensas-de-luz-todos-los-cursos/msg221242/#msg221242">Ir a clase</a></div></article></div>
-      
-      
-      <div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-      <h2><span>Leah Nott</span><strong>Encantamientos <img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-      <img class="img-responsive" src="https://i.imgur.com/7YSs1u6.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-     Corpus Sanatem</h4><a class="link" target="_blank" href="https://harrypotterhead.com/foro/encantamientos/encantamientos-corpus-sanetem-todos-los-cursos/msg221253/#msg221253">Ir a clase</a></div></article></div>
-      
-      <div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-        <h2><span>Fae Dalarce</span><strong>Estudios Muggles <img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://i.imgur.com/b1fK5CN.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-        Duelo y memoria</h4><a class="link" target="_blank" href="https://harrypotterhead.com/foro/estudios-muggles/estudios-muggles-duelo-y-memoria-todos-los-cursos/msg220133/#msg220133">Ir a clase</a></div></article>
-      </div>
-              
-      <div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-        <h2><span>Enzo G. Diavoli</span><strong>Historia de la Magia <img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://i.imgur.com/072SzDi.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-        Hatsuyume </h4><a class="link" target="_blank" href="https://harrypotterhead.com/foro/historia-de-la-magia/historia-de-la-magia-hatsuyume-todos-los-cursos/msg220110/#msg220110">Ir a clase</a></div></article></div>
-      
-      <div class="col-md-4 col-sm-6 col-xs-12" style="*margin-left: 120px;"><article class="material-card Red">
-        <h2><span>Éferon Cabane</span><strong>Pociones <img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://i.imgur.com/HGVSC9N.jpg"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-       Yule Lads</h4><a class="link" target="_blank" href="https://harrypotterhead.com/foro/pociones/pociones-yule-lads-todos-los-cursos/msg218262/#msg218262">Ir a clase</a></div></article></div>
-      
-      <div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-        <h2><span>Danya Dervishi</span><strong>Runas Antiguas <img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://i.imgur.com/PQlvTUe.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-        La conexión iliria</h4><a class="link" target="_blank" href="https://harrypotterhead.com/foro/runas-antiguas/runas-antiguas-la-conexion-iliria-todos-los-cursos/msg219069/#msg219069">Ir a clase</a></div></article></div>
-      
-      <div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-        <h2><span>A. Caelus Iacovone</span><strong>Transformaciones <img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://i.imgur.com/aRHqSiv.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-        Bibidi Babidi Bu</h4><a class="link" target="_blank" href="https://harrypotterhead.com/foro/transformaciones/transformaciones-bibidi-babidi-bu-todos-los-cursos/msg218365/#msg218365">Ir a clase</a></div></article></div>
-        
-        <div class="col-md-4 col-sm-6 col-xs-12"><article class="material-card Red">
-        <h2><span>Jakob Bergström</span><strong>Vuelo<img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2><div class="mc-content"><div class="img-container">
-        <img class="img-responsive" src="https://i.imgur.com/IZrNFmq.png"/></div></div><a class="mc-btn-action"><i class="ph ph-list"></i></a><div class="mc-footer"><h4>
-        Ataque en escoba</h4><a class="link" target="_blank" href="https://harrypotterhead.com/foro/vuelo/vueloataque-en-escoba-todos-los-cursos/msg218765/#msg218765">Ir a clase</a></div></article></div>
-        
-
-
-
-</div>
-</section>
-    `,
-    'personal': `<section class="section">
-    <div class="close-section">X</div>
-    <div class="demo-box"><span>PERSONAL</span></div>
-    <div class="contenido">
-
-      <div class="containerp">
-  <div class="leftbox">
-    <nav class="personal">
-      <a id="profile" class="active"><img src="https://i.imgur.com/Eyhu5fw.png"/></a>
-      <a id="payment"><img src="https://i.imgur.com/pM5t86n.png"/></a>
-      <a id="privacy"><img src="https://i.imgur.com/Y7C48Z7.png"/></a>
-      <a id="subscription"><img src="https://i.imgur.com/U2Lend0.png"/></a>
-      <a id="settings"><img src="https://i.imgur.com/wdobfpz.png"/></a>
-      <a id="key"><img src="https://i.imgur.com/szQqI1z.png"/></a>
-    </nav>
-  </div>
-  <div class="rightbox">
-    <div class="profile">
-      <div class="titulo">DIRECTOR </div>
-      <div class="back2" style="background:url(https://i.imgur.com/4HPxf0S.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=199" title="Perfil" target="_blank"> Jin Kleverk</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=199" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-    </div>
-
-    <div class="payment noshow">
-     <div class="titulo">VICEDIRECTORA </div>
-      <div class="back2" style="background:url(https://i.imgur.com/talFRul.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=637" title="Perfil" target="_blank">Danya Dervishi</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=637" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-    </div>
-
-        <div class="privacy noshow">
-     <div class="titulo">JEFE DE SANACIÓN</div>
-      <div class="back2" style="background:url(https://i.imgur.com/NXiOkya.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=21" title="Perfil" target="_blank">Lillie Windhunter</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=21" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-    </div>
-
-    <div class="subscription noshow">
-    <div class="titulo">BIBLIOTECARIA</div>
-      <div class="back2" style="background:url(https://i.imgur.com/G7vHhXq.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=88" title="Perfil" target="_blank">Meredith G. Marlowe</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=88" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-    </div>
-
-    <div class="settings noshow">
-     <div class="titulo">GUARDABOSQUES </div>
-      <div class="back2" style="background:url(https://i.imgur.com/4bXXqhk.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=149" title="Perfil" target="_blank">Gideon Katsaros</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=149" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-    </div>
-
-     <div class="key noshow">
-     <div class="titulo">CELADORA </div>
-      <div class="back2" style="background:url(https://i.imgur.com/QkR7eE8.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=46" title="Perfil" target="_blank">Willow J. Wilderose</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=46" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-    </div>
-
-  </div>
-</div>
-
-
-    </div>
-  </section>`,
-    'jefes': `<section class="section">
-    <div class="close-section">X</div>
-    <div class="demo-box"><span>JEFES DE CASA</span></div>
-     <div class="contenido">
-   <div class="card">
-  <div class="content2">
-    <div class="front" style="background:url(https://i.imgur.com/1nSLN35.jpg);"></div>
-    <div class="back" style="background:url(https://i.imgur.com/TLqSeQw.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=35" title="Perfil" target="_blank">Éferon Cabane</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=35" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-  </div>
-</div><div class="card">
-  <div class="content2">
-    <div class="front" style="background:url(https://i.imgur.com/8qh5m1Q.jpg);"></div>
-    <div class="back" style="background:url(https://i.imgur.com/LvvANQS.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=637" title="Perfil" target="_blank">Danya Dervishi</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=637" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-  </div>
-</div><div class="card">
-  <div class="content2">
-    <div class="front" style="background:url(https://i.imgur.com/8jUIPFK.jpg);"></div>
-    <div class="back" style="background:url(https://i.imgur.com/PUo5vEE.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=427" title="Perfil" target="_blank">Enzo G. Diavoli</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=427" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-  </div>
-</div><div class="card">
-  <div class="content2">
-    <div class="front" style="background:url(https://i.imgur.com/JMfkre8.jpg);"></div>
-    <div class="back" style="background:url(https://i.imgur.com/qLIQKdW.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=56" title="Perfil" target="_blank">Leah Nott</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=56" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-  </div>
-</div>
-
-    </div>
-  </section>`,
-    'premios': `<section class="section">
-    <div class="close-section">X</div>
-    <div class="demo-box"><span>PREMIOS ANUALES</span></div>
-     <div class="contenido">
-     <div class="container3">
-
-    <div class="closed-box bg-1">
-       <img src="https://i.imgur.com/1nSLN35.jpg" width="200px">
-    </div>
-
-    <div class="closed-box bg-2">
-      <img src="https://i.imgur.com/8qh5m1Q.jpg" width="200px">
-    </div>
-
-    <div class="closed-box bg-3">
-      <img src="https://i.imgur.com/8jUIPFK.jpg" width="200px">
-    </div>
-    <div class="closed-box bg-4">
-      <img src="https://i.imgur.com/JMfkre8.jpg" width="200px">
-    </div>
-
-    <!--  Sin rostro:  https://i.imgur.com/TJ8lcTM.jpg-->
-    <div class="open-box">
-      <div class="close-button">X</div>
-      <div class="back2" style="background:url(https://i.imgur.com/CkspggX.png);margin: auto;padding-top: 250px;position:relative;"><div class="mensaje" style="margin:auto"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=303" title="Perfil" target="_blank">Elisabeth Walker</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=303" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-    </div>
-
-
-    <div class="open-box">
-      <div class="close-button">X</div>
-      <div class="back2" style="background:url(https://i.imgur.com/S3wvyJ6.png);margin: auto;padding-top: 250px;position:relative;"><div class="mensaje" style="margin:auto"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=107" title="Perfil" target="_blank">Elián Idriswenjellu</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=107" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-    </div>
-
-    <div class="open-box">
-      <div class="close-button">X</div>
-      <div class="back2" style="background:url(https://i.imgur.com/s4SbcOD.png);margin: auto;padding-top: 250px;position:relative;"><div class="mensaje" style="margin:auto"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=122" title="Perfil" target="_blank">Victoria DeLacourt</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=122" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-    </div>
-
-    <div class="open-box">
-      <div class="close-button">X</div>
-      <div class="back2" style="background:url(https://i.imgur.com/fRRasrp.png);margin: auto;padding-top: 250px;position:relative;"><div class="mensaje" style="margin:auto"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=69" title="Perfil" target="_blank">Ivar Solheim</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=69" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
-    </div>
-
-
-
-  </div>
-
-
-    </div>
-  </section>`
-};
-
 // --- 6. FUNCIONES PROCEDIMENTALES OPTIMIZADAS ---
 function crearPasarelaPlana(pInicio, pFin, y) {
     const grupo = new THREE.Group();
@@ -481,11 +265,11 @@ for (let i = 0; i <= segmentos; i++) {
 // --- 9. ILUMINACIÓN (OPTIMIZADA) ---
 function initLighting() {
     // A. Luz de hemisferio: aporta profundidad (color cielo, color suelo, intensidad)
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+    const hemiLight = new THREE.HemisphereLight(0xaaaaff, 0x222277, 1);
     scene.add(hemiLight);
 
     // B. Luz direccional: resalta las texturas y relieves de piedra/madera
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    const dirLight = new THREE.DirectionalLight(0xaaaaff, 1.2);
     dirLight.position.set(5, 10, 7.5);
     scene.add(dirLight);
 }
@@ -524,9 +308,9 @@ globalThis.addEventListener('click', (event) => {
         const infoElement = document.querySelector('.info');
         if (infoElement && contenidosInfo[idPuerta]) {
             // Inyectamos el HTML correspondiente del array/objeto contenidosInfo
-            document.querySelector('.block-info').innerHTML = contenidosInfo[idPuerta];
-            infoElement.style.opacity = 1;
-            infoElement.style.pointerEvents = 'auto';
+            document.querySelector(`#${idPuerta}`).classList.remove('hidden');
+        document.querySelector(`#${idPuerta}`).classList.add('open');
+        infoElement.classList.remove('close');
         }
     }
 });

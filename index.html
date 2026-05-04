@@ -22,44 +22,32 @@
         <h1 id="progress-text">Cargando: 0%</h1>
     </div>
 
-
-    <nav style="position: fixed; top: 20px; left: 20px; z-index: 2;">
-        <button onclick="irAObjeto('clases')">Clases</button>
-        <button onclick="irAObjeto('personal')">Personal</button>
-        <button onclick="irAObjeto('jefes')">Jefes de las casas</button>
-        <button onclick="irAObjeto('premios')">Premios anuales</button>
-    </nav>
-
-    <!-- <header class="info">
-        <nav class="menu nav">
-            <nav style="display: flex; flex-direction: column; gap: .5em; position: fixed; top: 50%; left: 20px; z-index: 100;">
-                <button onclick="irAObjeto('clases')">Clases</button>
-                <button onclick="irAObjeto('personal')">Personal</button>
-                <button onclick="irAObjeto('jefes')">Jefes de las casas</button>
-                <button onclick="irAObjeto('premios')">Premios anuales</button>
-            </nav>
+    <header class="header">
+        <nav style="display: flex; flex-direction: column; gap: .5em; position: fixed; top: 50%; left: 20px;">
+            <button onclick="irAObjeto('clases')">Clases</button>
+            <button onclick="irAObjeto('personal')">Personal</button>
+            <button onclick="irAObjeto('jefes')">Jefes de las casas</button>
+            <button onclick="irAObjeto('premios')">Premios anuales</button>
         </nav>
-
-        <nav class="menu social">
-            <ul>
-                <li><a href="#">RRSS#1</a></li>
-                <li><a href="#">RRSS#2</a></li>
-            </ul>
-        </nav>
-
-        <nav class="menu legal">
-            <ul>
-                <li><a href="#">Legal</a></li>
-                <li><a href="#">Derechos</a></li>
-            </ul>
-        </nav>
-    </header> -->
+    </header>
 
     <main>
-        <section class="info">
-            <div class="block-info"></div>
+        <section class="info close">
+            <div class="block-info">
+                <section id="clases" class="department hidden"></section>
+                <section id="personal" class="department hidden"></section>
+                <section id="jefes" class="department hidden"></section>
+                <section id="premios" class="department hidden"></section>
+            </div>
 
-            <div><button onclick="closeInfo()" style="padding: 100px;">X</button></div>
+            <div class="close-button"><button onclick="closeInfo()" style="padding: 10px;"><svg
+                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="icon icon-tabler icons-tabler-outline icon-tabler-x">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M18 6l-12 12" />
+                        <path d="M6 6l12 12" />
+                    </svg></button></div>
         </section>
     </main>
 
@@ -90,14 +78,294 @@
             });
         };
 
-        //Cerrar información
-        function closeInfo() {
-            const infoElement = document.querySelector('.info');
-            if (infoElement) {
-                infoElement.style.opacity = 0;
-                infoElement.style.pointerEvents = 'none';
+        let infoClases = [
+            {
+                'nombre': 'Gea V. Marai',
+                'asignatura': 'Adivinación',
+                'img': 'profile-2276558982_resized.jpg',
+                'clase': 'El péndulo y la fortuna',
+                'claseLink': 'https://harrypotterhead.com/foro/adivinacion/adivinacion-el-pendulo-y-la-fortuna-todos-los-cursos/msg220026/#msg220026'
+            },
+            {
+                'nombre': 'Gea V. Marai',
+                'asignatura': 'Defensa Contra Artes Oscuras',
+                'img': 'profile-2276558982_resized.jpg',
+                'clase': 'El péndulo y la fortuna',
+                'claseLink': 'https://harrypotterhead.com/foro/adivinacion/adivinacion-el-pendulo-y-la-fortuna-todos-los-cursos/msg220026/#msg220026'
+            },
+            {
+                'nombre': 'Gea V. Marai',
+                'asignatura': 'Adivinación',
+                'img': 'profile-2276558982_resized.jpg',
+                'clase': 'El péndulo y la fortuna',
+                'claseLink': 'https://harrypotterhead.com/foro/adivinacion/adivinacion-el-pendulo-y-la-fortuna-todos-los-cursos/msg220026/#msg220026'
+            },
+            {
+                'nombre': 'Gea V. Marai',
+                'asignatura': 'Adivinación',
+                'img': 'profile-2276558982_resized.jpg',
+                'clase': 'El péndulo y la fortuna',
+                'claseLink': 'https://harrypotterhead.com/foro/adivinacion/adivinacion-el-pendulo-y-la-fortuna-todos-los-cursos/msg220026/#msg220026'
+            },
+            {
+                'nombre': 'Gea V. Marai',
+                'asignatura': 'Adivinación',
+                'img': 'profile-2276558982_resized.jpg',
+                'clase': 'El péndulo y la fortuna',
+                'claseLink': 'https://harrypotterhead.com/foro/adivinacion/adivinacion-el-pendulo-y-la-fortuna-todos-los-cursos/msg220026/#msg220026'
+            },
+            {
+                'nombre': 'Gea V. Marai',
+                'asignatura': 'Adivinación',
+                'img': 'profile-2276558982_resized.jpg',
+                'clase': 'El péndulo y la fortuna',
+                'claseLink': 'https://harrypotterhead.com/foro/adivinacion/adivinacion-el-pendulo-y-la-fortuna-todos-los-cursos/msg220026/#msg220026'
+            },
+            {
+                'nombre': 'Gea V. Marai',
+                'asignatura': 'Adivinación',
+                'img': 'profile-2276558982_resized.jpg',
+                'clase': 'El péndulo y la fortuna',
+                'claseLink': 'https://harrypotterhead.com/foro/adivinacion/adivinacion-el-pendulo-y-la-fortuna-todos-los-cursos/msg220026/#msg220026'
+            },
+            {
+                'nombre': 'Gea V. Marai',
+                'asignatura': 'Adivinación',
+                'img': 'profile-2276558982_resized.jpg',
+                'clase': 'El péndulo y la fortuna',
+                'claseLink': 'https://harrypotterhead.com/foro/adivinacion/adivinacion-el-pendulo-y-la-fortuna-todos-los-cursos/msg220026/#msg220026'
+            },
+            {
+                'nombre': 'Gea V. Marai',
+                'asignatura': 'Adivinación',
+                'img': 'profile-2276558982_resized.jpg',
+                'clase': 'El péndulo y la fortuna',
+                'claseLink': 'https://harrypotterhead.com/foro/adivinacion/adivinacion-el-pendulo-y-la-fortuna-todos-los-cursos/msg220026/#msg220026'
             }
-        }
+        ];
+        let infoPersonal = 0;
+        let infoJefes = 0;
+        let infoPremios = 0;
+        let contenidosInfo = {
+
+            'clases': ``,
+
+
+            'personal': `<section>
+    <div>X</div>
+    <div><span>PERSONAL</span></div>
+    <div>
+
+      <div>
+  <div>
+    <nav>
+      <a id="profile"><img src="https://i.imgur.com/Eyhu5fw.png"/></a>
+      <a id="payment"><img src="https://i.imgur.com/pM5t86n.png"/></a>
+      <a id="privacy"><img src="https://i.imgur.com/Y7C48Z7.png"/></a>
+      <a id="subscription"><img src="https://i.imgur.com/U2Lend0.png"/></a>
+      <a id="settings"><img src="https://i.imgur.com/wdobfpz.png"/></a>
+      <a id="key"><img src="https://i.imgur.com/szQqI1z.png"/></a>
+    </nav>
+  </div>
+  <div>
+    <div>
+      <div>DIRECTOR </div>
+      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=199" title="Perfil" target="_blank"> Jin Kleverk</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=199" title="MP" target="_blank"><i></i></a></div></div>
+    </div>
+
+    <div>
+     <div>VICEDIRECTORA </div>
+      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=637" title="Perfil" target="_blank">Danya Dervishi</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=637" title="MP" target="_blank"><i></i></a></div></div>
+    </div>
+
+        <div>
+     <div>JEFE DE SANACIÓN</div>
+      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=21" title="Perfil" target="_blank">Lillie Windhunter</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=21" title="MP" target="_blank"><i></i></a></div></div>
+    </div>
+
+    <div>
+    <div>BIBLIOTECARIA</div>
+      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=88" title="Perfil" target="_blank">Meredith G. Marlowe</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=88" title="MP" target="_blank"><i></i></a></div></div>
+    </div>
+
+    <div>
+     <div>GUARDABOSQUES </div>
+      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=149" title="Perfil" target="_blank">Gideon Katsaros</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=149" title="MP" target="_blank"><i></i></a></div></div>
+    </div>
+
+     <div>
+     <div>CELADORA </div>
+      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=46" title="Perfil" target="_blank">Willow J. Wilderose</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=46" title="MP" target="_blank"><i></i></a></div></div>
+    </div>
+
+  </div>
+</div>
+
+
+    </div>
+  </section>`,
+
+
+            'jefes': `<section>
+    <div>X</div>
+    <div><span>JEFES DE CASA</span></div>
+     <div>
+   <div>
+  <div>
+    <div><img src="https://i.imgur.com/1nSLN35.jpg"/></div>
+    <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=35" title="Perfil" target="_blank">Éferon Cabane</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=35" title="MP" target="_blank"><i></i></a></div></div>
+  </div>
+</div><div>
+  <div>
+    <div><img src="https://i.imgur.com/8qh5m1Q.jpg"/></div>
+    <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=637" title="Perfil" target="_blank">Danya Dervishi</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=637" title="MP" target="_blank"><i></i></a></div></div>
+  </div>
+</div><div>
+  <div>
+    <div><img src="https://i.imgur.com/8jUIPFK.jpg"/></div>
+    <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=427" title="Perfil" target="_blank">Enzo G. Diavoli</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=427" title="MP" target="_blank"><i></i></a></div></div>
+  </div>
+</div><div>
+  <div>
+    <div><img src="https://i.imgur.com/JMfkre8.jpg"/></div>
+    <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=56" title="Perfil" target="_blank">Leah Nott</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=56" title="MP" target="_blank"><i></i></a></div></div>
+  </div>
+</div>
+    </div>
+  </section>`,
+
+
+            'premios': `<section>
+    <div>X</div>
+    <div><span>PREMIOS ANUALES</span></div>
+     <div>
+     <div>
+
+    <div>
+       <img src="https://i.imgur.com/1nSLN35.jpg" width="200px">
+    </div>
+
+    <div>
+      <img src="https://i.imgur.com/8qh5m1Q.jpg" width="200px">
+    </div>
+
+    <div>
+      <img src="https://i.imgur.com/8jUIPFK.jpg" width="200px">
+    </div>
+    <div>
+      <img src="https://i.imgur.com/JMfkre8.jpg" width="200px">
+    </div>
+
+    <!--  Sin rostro:  https://i.imgur.com/TJ8lcTM.jpg-->
+    <div>
+      <div>X</div>
+      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=303" title="Perfil" target="_blank">Elisabeth Walker</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=303" title="MP" target="_blank"><i></i></a></div></div>
+    </div>
+
+
+    <div>
+      <div>X</div>
+      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=107" title="Perfil" target="_blank">Elián Idriswenjellu</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=107" title="MP" target="_blank"><i></i></a></div></div>
+    </div>
+
+    <div>
+      <div>X</div>
+      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=122" title="Perfil" target="_blank">Victoria DeLacourt</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=122" title="MP" target="_blank"><i></i></a></div></div>
+    </div>
+
+    <div>
+      <div>X</div>
+      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=69" title="Perfil" target="_blank">Ivar Solheim</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=69" title="MP" target="_blank"><i></i></a></div></div>
+    </div>
+
+
+
+  </div>
+
+
+    </div>
+  </section>`
+        };
+        let currentSlideClases = 0;
+
+        const infoElement = document.querySelector('.info');
+
+        function closeInfo() {
+            if (infoElement) {
+                infoElement.classList.add('close');
+                document.querySelector('.open').classList.replace('open', 'hidden');
+            }
+        };
+
+        (function writeInfo() {
+
+            contenidosInfo.clases = `<section>
+    <section class="section-prof">
+        <div>
+            <div>
+                <span>CLASES</span>
+            </div>
+            <section>
+                <button class="nav prev" id="prev" aria-label="Anterior">‹</button>
+                <button class="nav next" id="next" aria-label="Siguiente">›</button>
+                <div class="dots" id="dots"></div>
+                <div class="profesores">`;
+            infoClases.forEach(clase => {
+                contenidosInfo.clases += `
+                    <div>
+                        <article class="card">
+                            <div>
+                                <div>
+                                    <img src="${clase.img}" />
+                                </div>
+                            </div>
+                            <h2><span>${clase.nombre}</span><strong>${clase.asignatura}<img src="https://i.imgur.com/X6h7n1u.gif"/></strong></h2>
+                            <a>
+                                <i></i>
+                            </a>
+                            <div>
+                                <h4>${clase.clase}</h4>
+                                <a target="_blank"
+                                    href="${clase.claseLink}">Ir
+                                    a clase</a>
+                            </div>
+                        </article>
+                    </div>`;
+            });
+            contenidosInfo.clases += `</div>
+            </section>
+        </div>
+    </section>
+</section>`;
+            document.querySelector('#clases').innerHTML = contenidosInfo['clases'];
+
+            document.querySelector('#personal').innerHTML = contenidosInfo['personal'];
+
+            document.querySelector('#jefes').innerHTML = contenidosInfo['jefes'];
+
+            document.querySelector('#premios').innerHTML = contenidosInfo['premios'];
+
+        })();
+
+        function showInfo(department) {
+            document.querySelector(`#${department}`).classList.remove('hidden');
+            document.querySelector(`#${department}`).classList.add('open');
+            infoElement.classList.remove('close');
+        };
+
+        const prevBtn = document.getElementById('prev');
+        const nextBtn = document.getElementById('next');
+        console.log(prevBtn);
+        console.log(nextBtn);
+
+        prevBtn.addEventListener('click', () => {
+            currentSlideClases += 33;
+            document.querySelector('.profesores').style.right = `${currentSlideClases}%`;
+        });
+        nextBtn.addEventListener('click', () => {
+            currentSlideClases -= 33;
+            document.querySelector('.profesores').style.right = `${currentSlideClases}%`;
+        });
     </script>
 </body>
 
