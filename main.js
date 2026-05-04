@@ -1,12 +1,37 @@
 import * as THREE from 'three';
 
 
-// --- 1. ESCENA, CÁMARA Y RENDERIZADOR ---
+// --- 1. ESCENA, CÁMARA Y RENDERIZADOR (ACTUALIZADO CON FONDO ESTRELLADO) ---
 const scene = new THREE.Scene();
+
+// Seteamos el fondo de la escena a negro profundo para el espacio
+scene.background = new THREE.Color(0x000005);
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+// --- 1.1 GENERACIÓN DE ESTRELLAS ALEATORIAS ---
+const starsGeometry = new THREE.BufferGeometry();
+const starsCount = 15000; // Cantidad de estrellas
+const positions = new Float32Array(starsCount * 3);
+
+for (let i = 0; i < starsCount * 3; i++) {
+    // Distribuimos las estrellas en un cubo de 1000 unidades
+    positions[i] = (Math.random() - 0.5) * 1000;
+}
+
+starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+const starsMaterial = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 0.1,           // Tamaño de cada estrella
+    sizeAttenuation: true // Hace que las estrellas lejanas se vean más pequeñas
+});
+
+const starField = new THREE.Points(starsGeometry, starsMaterial);
+scene.add(starField);
 
 // --- 2. GESTIÓN DE TEXTURAS Y PANTALLA DE CARGA ---
 const loadingScreen = document.getElementById('loading-screen');
@@ -193,18 +218,137 @@ const contenidosInfo = {
 </div>
 </section>
     `,
-    'personal': `
-        <h2>Personal</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    `,
-    'jefes': `
-        <h2>Jefes de las casas</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-    `,
-    'premios': `
-        <h2>Premios anuales</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-    `
+    'personal': `<section class="section">
+    <div class="close-section">X</div>
+    <div class="demo-box"><span>PERSONAL</span></div>
+    <div class="contenido">
+
+      <div class="containerp">
+  <div class="leftbox">
+    <nav class="personal">
+      <a id="profile" class="active"><img src="https://i.imgur.com/Eyhu5fw.png"/></a>
+      <a id="payment"><img src="https://i.imgur.com/pM5t86n.png"/></a>
+      <a id="privacy"><img src="https://i.imgur.com/Y7C48Z7.png"/></a>
+      <a id="subscription"><img src="https://i.imgur.com/U2Lend0.png"/></a>
+      <a id="settings"><img src="https://i.imgur.com/wdobfpz.png"/></a>
+      <a id="key"><img src="https://i.imgur.com/szQqI1z.png"/></a>
+    </nav>
+  </div>
+  <div class="rightbox">
+    <div class="profile">
+      <div class="titulo">DIRECTOR </div>
+      <div class="back2" style="background:url(https://i.imgur.com/4HPxf0S.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=199" title="Perfil" target="_blank"> Jin Kleverk</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=199" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+    </div>
+
+    <div class="payment noshow">
+     <div class="titulo">VICEDIRECTORA </div>
+      <div class="back2" style="background:url(https://i.imgur.com/talFRul.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=637" title="Perfil" target="_blank">Danya Dervishi</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=637" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+    </div>
+
+        <div class="privacy noshow">
+     <div class="titulo">JEFE DE SANACIÓN</div>
+      <div class="back2" style="background:url(https://i.imgur.com/NXiOkya.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=21" title="Perfil" target="_blank">Lillie Windhunter</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=21" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+    </div>
+
+    <div class="subscription noshow">
+    <div class="titulo">BIBLIOTECARIA</div>
+      <div class="back2" style="background:url(https://i.imgur.com/G7vHhXq.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=88" title="Perfil" target="_blank">Meredith G. Marlowe</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=88" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+    </div>
+
+    <div class="settings noshow">
+     <div class="titulo">GUARDABOSQUES </div>
+      <div class="back2" style="background:url(https://i.imgur.com/4bXXqhk.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=149" title="Perfil" target="_blank">Gideon Katsaros</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=149" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+    </div>
+
+     <div class="key noshow">
+     <div class="titulo">CELADORA </div>
+      <div class="back2" style="background:url(https://i.imgur.com/QkR7eE8.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=46" title="Perfil" target="_blank">Willow J. Wilderose</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=46" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+    </div>
+
+  </div>
+</div>
+
+
+    </div>
+  </section>`,
+    'jefes': `<section class="section">
+    <div class="close-section">X</div>
+    <div class="demo-box"><span>JEFES DE CASA</span></div>
+     <div class="contenido">
+   <div class="card">
+  <div class="content2">
+    <div class="front" style="background:url(https://i.imgur.com/1nSLN35.jpg);"></div>
+    <div class="back" style="background:url(https://i.imgur.com/TLqSeQw.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=35" title="Perfil" target="_blank">Éferon Cabane</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=35" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+  </div>
+</div><div class="card">
+  <div class="content2">
+    <div class="front" style="background:url(https://i.imgur.com/8qh5m1Q.jpg);"></div>
+    <div class="back" style="background:url(https://i.imgur.com/LvvANQS.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=637" title="Perfil" target="_blank">Danya Dervishi</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=637" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+  </div>
+</div><div class="card">
+  <div class="content2">
+    <div class="front" style="background:url(https://i.imgur.com/8jUIPFK.jpg);"></div>
+    <div class="back" style="background:url(https://i.imgur.com/PUo5vEE.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=427" title="Perfil" target="_blank">Enzo G. Diavoli</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=427" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+  </div>
+</div><div class="card">
+  <div class="content2">
+    <div class="front" style="background:url(https://i.imgur.com/JMfkre8.jpg);"></div>
+    <div class="back" style="background:url(https://i.imgur.com/qLIQKdW.png);"><div class="mensaje"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=56" title="Perfil" target="_blank">Leah Nott</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=56" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+  </div>
+</div>
+
+    </div>
+  </section>`,
+    'premios': `<section class="section">
+    <div class="close-section">X</div>
+    <div class="demo-box"><span>PREMIOS ANUALES</span></div>
+     <div class="contenido">
+     <div class="container3">
+
+    <div class="closed-box bg-1">
+       <img src="https://i.imgur.com/1nSLN35.jpg" width="200px">
+    </div>
+
+    <div class="closed-box bg-2">
+      <img src="https://i.imgur.com/8qh5m1Q.jpg" width="200px">
+    </div>
+
+    <div class="closed-box bg-3">
+      <img src="https://i.imgur.com/8jUIPFK.jpg" width="200px">
+    </div>
+    <div class="closed-box bg-4">
+      <img src="https://i.imgur.com/JMfkre8.jpg" width="200px">
+    </div>
+
+    <!--  Sin rostro:  https://i.imgur.com/TJ8lcTM.jpg-->
+    <div class="open-box">
+      <div class="close-button">X</div>
+      <div class="back2" style="background:url(https://i.imgur.com/CkspggX.png);margin: auto;padding-top: 250px;position:relative;"><div class="mensaje" style="margin:auto"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=303" title="Perfil" target="_blank">Elisabeth Walker</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=303" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+    </div>
+
+
+    <div class="open-box">
+      <div class="close-button">X</div>
+      <div class="back2" style="background:url(https://i.imgur.com/S3wvyJ6.png);margin: auto;padding-top: 250px;position:relative;"><div class="mensaje" style="margin:auto"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=107" title="Perfil" target="_blank">Elián Idriswenjellu</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=107" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+    </div>
+
+    <div class="open-box">
+      <div class="close-button">X</div>
+      <div class="back2" style="background:url(https://i.imgur.com/s4SbcOD.png);margin: auto;padding-top: 250px;position:relative;"><div class="mensaje" style="margin:auto"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=122" title="Perfil" target="_blank">Victoria DeLacourt</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=122" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+    </div>
+
+    <div class="open-box">
+      <div class="close-button">X</div>
+      <div class="back2" style="background:url(https://i.imgur.com/fRRasrp.png);margin: auto;padding-top: 250px;position:relative;"><div class="mensaje" style="margin:auto"><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=69" title="Perfil" target="_blank">Ivar Solheim</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=69" title="MP" target="_blank"><i class="ph-light ph-envelope"></i></a></div></div>
+    </div>
+
+
+
+  </div>
+
+
+    </div>
+  </section>`
 };
 
 // --- 6. FUNCIONES PROCEDIMENTALES OPTIMIZADAS ---
@@ -297,7 +441,7 @@ crearMurallaExterior(0.75, 1, -1.75, -1.75);
 const geoCilindro = new THREE.CylinderGeometry(a, a, 10, 64, 1, true);
 const matCilindro = new THREE.MeshStandardMaterial({ map: texturaPiedra, side: THREE.DoubleSide, roughness: 0.8 });
 const cilindroCentral = new THREE.Mesh(geoCilindro, matCilindro);
-cilindroCentral.scale.set(1, 1, b / a);
+cilindroCentral.scale.set(2, 2, 2);
 cilindroCentral.position.set(0, 1.125, 0);
 scene.add(cilindroCentral);
 
@@ -355,8 +499,6 @@ gsap.to(scrollData, {
     ease: "none",
     scrollTrigger: {
         trigger: "body", start: "top top", end: "bottom bottom", scrub: 1,
-        onLeave: () => window.scrollTo(0, 1),
-        onEnterBack: () => window.scrollTo(0, document.body.scrollHeight - 1)
     },
     onUpdate: () => {
         const index = Math.floor(scrollData.progreso * segmentos) % segmentos;
