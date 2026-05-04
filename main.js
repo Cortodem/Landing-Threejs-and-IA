@@ -441,7 +441,7 @@ crearMurallaExterior(0.75, 1, -1.75, -1.75);
 const geoCilindro = new THREE.CylinderGeometry(a, a, 10, 64, 1, true);
 const matCilindro = new THREE.MeshStandardMaterial({ map: texturaPiedra, side: THREE.DoubleSide, roughness: 0.8 });
 const cilindroCentral = new THREE.Mesh(geoCilindro, matCilindro);
-cilindroCentral.scale.set(2, 2, 2);
+cilindroCentral.scale.set(1, 1, b/a);
 cilindroCentral.position.set(0, 1.125, 0);
 scene.add(cilindroCentral);
 
