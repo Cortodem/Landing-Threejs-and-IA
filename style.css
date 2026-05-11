@@ -29,7 +29,7 @@ canvas {
     z-index: 1;
 }
 
-nav {
+.header nav {
     position: absolute;
     top: 50%;
     left: 1%;
@@ -74,14 +74,15 @@ nav {
     justify-content: space-evenly;
 }
 
-#clases .slider {
+.info .slider {
     height: 20px;
     width: 20px;
     cursor: pointer;
     border: solid 2px;
 }
 
-.info .profesores {
+.info .profesores,
+.info .personal {
     width: 100%;
     display: flex;
     align-items: center;
@@ -89,18 +90,23 @@ nav {
     gap: 20px;
     transition: all .45s ease;
     overflow: auto;
-    scrollbar-width: auto;
+    scrollbar-width: none;
 }
 
-.info .profesores>div {
+.info .profesores>div,
+.info .personal>div{
     padding: 1em;
     transition: all .45s ease;
 }
 
 .info .profesores>div:hover,
-.info .profesores>div:focus {
+.info .personal>div:hover,
+.info .profesores>div:focus,
+.info .personal>div:focus
+ {
     background-color: aquamarine;
 }
+
 
 .card {
     max-width: 200px;
