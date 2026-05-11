@@ -9,14 +9,15 @@ body {
     width: 100%;
     /* Esto define la "longitud" del scroll para completar el giro */
     height: 1000vh;
-    overflow-y: scroll;
+    overflow: auto;
     /* Firefox */
-    scrollbar-width: none;
+    scrollbar-width: auto;
     /* Internet Explorer 10+ */
     -ms-overflow-style: none;
 }
 
-body::-webkit-scrollbar {
+body::-webkit-scrollbar,
+.info .profesores::-webkit-scrollbar {
     /* Chrome, Edge, Safari */
     display: none;
 }
@@ -40,7 +41,7 @@ nav {
     pointer-events: none;
 }
 
-.hidden{
+.hidden {
     height: 0;
     opacity: 0;
     pointer-events: none;
@@ -66,18 +67,29 @@ nav {
 
 .info .block-info {
     width: calc(640px + 6em);
-    overflow: clip;
+}
+
+.flex {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+#clases .slider {
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
+    border: solid 2px;
 }
 
 .info .profesores {
     width: 100%;
-    position: relative;
     display: flex;
     align-items: center;
     justify-items: center;
     gap: 20px;
-    right: 0;
     transition: all .45s ease;
+    overflow: auto;
+    scrollbar-width: auto;
 }
 
 .info .profesores>div {
@@ -86,7 +98,7 @@ nav {
 }
 
 .info .profesores>div:hover,
-.info .profesores>div:focus{
+.info .profesores>div:focus {
     background-color: aquamarine;
 }
 

@@ -6,14 +6,6 @@
     <title>Colegio departamentos Hogwarts</title>
 
     <link rel="stylesheet" href="style.css">
-    <style>
-        canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 0;
-        }
-    </style>
 </head>
 
 <body>
@@ -25,8 +17,8 @@
     <header class="header">
         <nav style="display: flex; flex-direction: column; gap: .5em; position: fixed; top: 50%; left: 20px;">
             <button onclick="irAObjeto('clases')">Clases</button>
-            <button onclick="irAObjeto('personal')">Personal</button>
             <button onclick="irAObjeto('jefes')">Jefes de las casas</button>
+            <button onclick="irAObjeto('personal')">Personal</button>
             <button onclick="irAObjeto('premios')">Premios anuales</button>
         </nav>
     </header>
@@ -69,7 +61,7 @@
             console.log("irAObjeto run con id:" + id);
 
 
-            const indices = { 'clases': 0, 'jefes': 0.5, 'personal': 0.25, 'premios': 0.75 };
+            const indices = { 'clases': 0, 'jefes': 0.25, 'personal': 0.5, 'premios': 0.75 };
             const progresoDestino = indices[id];
 
             window.scrollTo({
@@ -306,9 +298,6 @@
                 <span>CLASES</span>
             </div>
             <section>
-                <button class="nav prev" id="prev" aria-label="Anterior">‹</button>
-                <button class="nav next" id="next" aria-label="Siguiente">›</button>
-                <div class="dots" id="dots"></div>
                 <div class="profesores">`;
             infoClases.forEach(clase => {
                 contenidosInfo.clases += `
@@ -332,8 +321,14 @@
                         </article>
                     </div>`;
             });
-            contenidosInfo.clases += `</div>
-            </section>
+            contenidosInfo.clases += `
+                </div>
+                </section>
+                <div class="flex">
+                    <div class="slider prev" id="prev" aria-label="Anterior">‹</div>
+                    <div class="dots" id="dots">dots</div>
+                    <div class="slider next" id="next" aria-label="Siguiente">›</div>
+                </div>
         </div>
     </section>
 </section>`;
@@ -355,17 +350,26 @@
 
         const prevBtn = document.getElementById('prev');
         const nextBtn = document.getElementById('next');
-        console.log(prevBtn);
-        console.log(nextBtn);
 
-        prevBtn.addEventListener('click', () => {
-            currentSlideClases += 33;
-            document.querySelector('.profesores').style.right = `${currentSlideClases}%`;
-        });
         nextBtn.addEventListener('click', () => {
-            currentSlideClases -= 33;
-            document.querySelector('.profesores').style.right = `${currentSlideClases}%`;
+            currentSlideClases += 1 / 9;
+            currentSlideClases = Math.min(currentSlideClases, 1);
+            moverSlider(currentSlideClases, document.querySelector('.profesores'));
         });
+        prevBtn.addEventListener('click', () => {
+            currentSlideClases -= 1 / 9;
+            currentSlideClases = Math.max(currentSlideClases, -0);
+            moverSlider(currentSlideClases, document.querySelector('.profesores'));
+        });
+
+        globalThis.moverSlider = (objective, contenedor) => {
+            contenedor.scrollTo({
+                left: objective * (contenedor.scrollWidth - contenedor.clientWidth),
+                behavior: 'smooth'
+            });
+        };
+
+
     </script>
 </body>
 

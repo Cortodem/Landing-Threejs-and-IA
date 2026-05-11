@@ -301,9 +301,7 @@ globalThis.addEventListener('click', (event) => {
 
     if (intersects.length > 0) {
         const puertaClicada = intersects[0].object;
-        console.log(puertaClicada.userData.id);
         const idPuerta = puertaClicada.userData.id;
-        console.log(contenidosInfo[idPuerta]);
 
         const infoElement = document.querySelector('.info');
         if (infoElement && contenidosInfo[idPuerta]) {
