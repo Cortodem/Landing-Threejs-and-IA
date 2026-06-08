@@ -259,8 +259,44 @@
         };
         let currentSlideClases = 0;
         let currentSlidePersonal = 0;
+        let clasesPageIndex = 0;
+        let clasesPageCount = 0;
+        let clasesCarousel = null;
+        let clasesDots = null;
 
         const infoElement = document.querySelector('.info');
+
+        const renderClasesDots = () => {
+            if (!clasesDots) return;
+            clasesDots.innerHTML = '';
+            for (let i = 0; i < clasesPageCount; i += 1) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'dot';
+                dot.setAttribute('aria-label', `Página ${i + 1}`);
+                dot.addEventListener('click', () => {
+                    clasesPageIndex = i;
+                    scrollClasesPage(i);
+                });
+                clasesDots.appendChild(dot);
+            }
+        };
+
+        const updateClasesDots = () => {
+            if (!clasesDots) return;
+            clasesDots.querySelectorAll('.dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === clasesPageIndex);
+            });
+        };
+
+        const scrollClasesPage = (page) => {
+            if (!clasesCarousel) return;
+            clasesCarousel.scrollTo({
+                left: page * clasesCarousel.clientWidth,
+                behavior: 'smooth'
+            });
+            updateClasesDots();
+        };
 
         function closeInfo() {
             if (infoElement) {
@@ -307,7 +343,7 @@
                     </section>
                     <div class="flex">
                         <div class="slider prev" id="prevC" aria-label="Anterior">‹</div>
-                        <div class="dots" id="dots">dots</div>
+                        <div class="dots" id="dotsC"></div>
                         <div class="slider next" id="nextC" aria-label="Siguiente">›</div>
                     </div>
                 </div>
@@ -370,6 +406,13 @@
 
             document.querySelector('#clases').innerHTML = contenidosInfo['clases'];
 
+            clasesCarousel = document.querySelector('#clases .profesores');
+            clasesDots = document.querySelector('#dotsC');
+            const clasesItems = clasesCarousel ? clasesCarousel.querySelectorAll(':scope > div') : [];
+            clasesPageCount = Math.max(1, Math.ceil(clasesItems.length / 3));
+            renderClasesDots();
+            updateClasesDots();
+
             document.querySelector('#personal').innerHTML = contenidosInfo['personal'];
 
             document.querySelector('#jefes').innerHTML = contenidosInfo['jefes'];
@@ -391,14 +434,12 @@
         const nextPBtn = document.getElementById('nextP');
 
         nextCBtn.addEventListener('click', () => {
-            currentSlideClases += 1 / 9;
-            currentSlideClases = Math.min(currentSlideClases, 1);
-            moverSlider(currentSlideClases, document.querySelector('.profesores'));
+            clasesPageIndex = Math.min(clasesPageCount - 1, clasesPageIndex + 1);
+            scrollClasesPage(clasesPageIndex);
         });
         prevCBtn.addEventListener('click', () => {
-            currentSlideClases -= 1 / 9;
-            currentSlideClases = Math.max(currentSlideClases, -0);
-            moverSlider(currentSlideClases, document.querySelector('.profesores'));
+            clasesPageIndex = Math.max(0, clasesPageIndex - 1);
+            scrollClasesPage(clasesPageIndex);
         });
 
         nextPBtn.addEventListener('click', () => {
