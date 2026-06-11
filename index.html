@@ -25,6 +25,7 @@
 
     <main>
         <section class="info close">
+            <canvas id="particles-canvas" class="particles-canvas"></canvas>
             <div class="block-info">
                 <section id="clases" class="department hidden"></section>
                 <section id="personal" class="department hidden"></section>
@@ -302,6 +303,7 @@
             if (infoElement) {
                 infoElement.classList.add('close');
                 document.querySelector('.open').classList.replace('open', 'hidden');
+                stopParticles();
             }
         };
 
@@ -425,6 +427,7 @@
             document.querySelector(`#${department} `).classList.remove('hidden');
             document.querySelector(`#${department}`).classList.add('open');
             infoElement.classList.remove('close');
+            startParticles();
         };
 
         const prevCBtn = document.getElementById('prevC');
@@ -460,6 +463,103 @@
             });
         };
 
+
+        // --- Particles background for info panel ---
+        let particleCanvas = null;
+        let particleCtx = null;
+        let particles = [];
+        let particleAnimId = null;
+        const PARTICLE_COUNT = 80;
+
+        function initParticles() {
+            particleCanvas = document.getElementById('particles-canvas');
+            if (!particleCanvas) return;
+            particleCtx = particleCanvas.getContext('2d');
+            resizeParticles();
+            const rect = particleCanvas.getBoundingClientRect();
+            const cw = Math.max(1, rect.width);
+            const ch = Math.max(1, rect.height);
+            particles = [];
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                particles.push({
+                    x: Math.random() * cw,
+                    y: Math.random() * ch,
+                    vx: (Math.random() - 0.5) * 0.6,
+                    vy: Math.random() * 0.6 + 0.2,
+                    r: Math.random() * 2 + 0.6,
+                    alpha: Math.random() * 0.6 + 0.15
+                });
+            }
+        }
+
+        function resizeParticles() {
+            if (!particleCanvas) return;
+            const ratio = window.devicePixelRatio || 1;
+            const w = Math.max(1, Math.floor(particleCanvas.clientWidth * ratio));
+            const h = Math.max(1, Math.floor(particleCanvas.clientHeight * ratio));
+            particleCanvas.width = w;
+            particleCanvas.height = h;
+            if (particleCtx) particleCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        }
+
+        function animateParticles() {
+            if (!particleCtx) return;
+            const cw = particleCanvas.clientWidth;
+            const ch = particleCanvas.clientHeight;
+            particleCtx.clearRect(0, 0, cw, ch);
+            for (const p of particles) {
+                p.x += p.vx;
+                p.y -= p.vy;
+                if (p.y < -20) {
+                    p.y = ch + 20;
+                    p.x = Math.random() * cw;
+                }
+                if (p.x < -30) p.x = cw + 30;
+                if (p.x > cw + 30) p.x = -30;
+
+                particleCtx.beginPath();
+                particleCtx.fillStyle = `rgba(212,175,55,${p.alpha})`;
+                particleCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                particleCtx.fill();
+            }
+            particleAnimId = requestAnimationFrame(animateParticles);
+        }
+
+        function startParticles() {
+            if (!particleCanvas) initParticles();
+            // ensure canvas sized to visible area
+            resizeParticles();
+            if (!particles || particles.length === 0) initParticles();
+            if (!particleAnimId) animateParticles();
+        }
+
+        function stopParticles() {
+            if (particleAnimId) {
+                cancelAnimationFrame(particleAnimId);
+                particleAnimId = null;
+            }
+            if (particleCtx && particleCanvas) particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeParticles();
+        });
+
+        // Observe .info visibility (class changes) so particles start/stop when panel opens
+        if (infoElement) {
+            const mo = new MutationObserver(() => {
+                const isClosed = infoElement.classList.contains('close');
+                if (!isClosed) {
+                    // panel opened
+                    setTimeout(() => {
+                        startParticles();
+                    }, 60);
+                } else {
+                    stopParticles();
+                }
+            });
+            mo.observe(infoElement, { attributes: true, attributeFilter: ['class'] });
+        }
 
     </script>
 </body>
