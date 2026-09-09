@@ -351,7 +351,7 @@ const scrollTween = gsap.to(scrollData, {
   onUpdate: () => {
     const index = Math.floor(scrollData.progreso * segmentos) % segmentos;
     camera.position.copy(puntosEsquiva[index]);
-    camera.lookAt(0, 0, 0);
+    camera.lookAt(0, 2, 0);
   }
 });
 
