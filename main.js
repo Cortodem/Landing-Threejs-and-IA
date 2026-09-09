@@ -3,14 +3,17 @@ import * as THREE from 'three';
 
 // --- 1. ESCENA, CÁMARA Y RENDERIZADOR (ACTUALIZADO CON FONDO ESTRELLADO) ---
 const scene = new THREE.Scene();
-
-// Seteamos el fondo de la escena a negro profundo para el espacio
-scene.background = new THREE.Color(0x000005);
-
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+// NUEVA IMPLEMENTACIÓN: Posicionar la cámara en el centro de la elipse (X=0, Z=0) a altura Y=1
+camera.position.set(12.5, 1, 0);
+// Apuntar la cámara exactamente al origen de coordenadas (0, 0, 0)
+camera.lookAt(0, 2, 0);
+
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
 
 // --- 1.1 GENERACIÓN DE ESTRELLAS ALEATORIAS ---
 const starsGeometry = new THREE.BufferGeometry();
@@ -32,6 +35,30 @@ const starsMaterial = new THREE.PointsMaterial({
 
 const starField = new THREE.Points(starsGeometry, starsMaterial);
 scene.add(starField);
+
+// 1.2 NUEVA IMPLEMENTACIÓN: Añadir receptor de audio (AudioListener) a la cámara
+const listener = new THREE.AudioListener();
+camera.add(listener);
+
+// Crear una fuente de sonido global (no posicional para el scroll de interfaz)
+const sonidoScroll = new THREE.Audio(listener);
+const audioLoader = new THREE.AudioLoader();
+
+// Carga el archivo de sonido (reemplaza por la ruta de tu archivo de sonido corto)
+audioLoader.load('assets/sounds/wind-effect.mp3', function(buffer) {
+    sonidoScroll.setBuffer(buffer);
+    sonidoScroll.setVolume(0.15); // Un volumen bajo (15%) evita que resulte molesto
+}, 
+// Callback opcional de progreso
+undefined,
+// Callback en caso de error
+function(err) {
+    console.warn("No se pudo cargar el archivo de audio. Asegúrate de tener un archivo válido en la ruta especificada.", err);
+});
+
+const renderSound = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+renderSound.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderSound.domElement);
 
 // --- 2. GESTIÓN DE TEXTURAS Y PANTALLA DE CARGA ---
 const loadingScreen = document.getElementById('loading-screen');
@@ -64,7 +91,7 @@ const texturaPuerta = loader.load('assets/textures/wood_planks_dirt_1k.jpg');
 [texturaPiedra, texturaMarmol, texturaMaderaEscaleras].forEach(t => {
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
 });
-texturaPiedra.repeat.set(4, 1);
+texturaPiedra.repeat.set(4, 3);
 texturaMarmol.repeat.set(16, 1);
 
 // --- 3. GEOMETRÍAS Y MATERIALES COMPARTIDOS (OPTIMIZACIÓN DE MEMORIA) ---
@@ -97,6 +124,17 @@ function updateMouseCoords(event) {
 
 globalThis.addEventListener('click', updateMouseCoords);
 globalThis.addEventListener('mousemove', updateMouseCoords);
+
+
+// --- INTERACCIÓN DE AUDIO (POLÍTICA DE NAVEGADORES) ---
+// Desbloquea el AudioContext del navegador con el primer clic del usuario
+window.addEventListener('click', () => {
+    if (listener.context && listener.context.state === 'suspended') {
+        listener.context.resume().then(() => {
+            console.log('Contexto de audio reanudado con éxito.');
+        });
+    }
+}, { once: true }); // Se ejecuta solo una vez
 
 // --- 5. BLOQUES Y PUERTAS ---
 const a = 10, b = 5;
@@ -210,23 +248,29 @@ function crearMurallaExterior(pInicio, pFin, y1, y2) {
 }
 
 // Inicialización de estructuras
-crearPasarelaPlana(0.23, 0.53, 2.25);
-crearPasarelaPlana(0.71, 1.3, -0.75);
+// crearPasarelaPlana(0.23, 0.53, 2.25);
+// crearPasarelaPlana(0.71, 1.3, -0.75);
 
-crearEscaleraEliptica(0.04, 0.23, -0.75, 2.25);
-crearEscaleraEliptica(0.54, 0.73, 2.25, -0.75);
+// crearEscaleraEliptica(0.04, 0.23, -0.75, 2.25);
+// crearEscaleraEliptica(0.54, 0.73, 2.25, -0.75);
 
-crearMurallaExterior(0, 0.25, -1.75, 1.25);
-crearMurallaExterior(0.25, 0.5, 1.25, 1.25);
-crearMurallaExterior(0.5, 0.75, 1.25, -1.75);
-crearMurallaExterior(0.75, 1, -1.75, -1.75);
+// crearMurallaExterior(0, 0.25, -1.75, 1.25);
+// crearMurallaExterior(0.25, 0.5, 1.25, 1.25);
+// crearMurallaExterior(0.5, 0.75, 1.25, -1.75);
+// crearMurallaExterior(0.75, 1, -1.75, -1.75);
 
 // --- 7. CILINDRO CENTRAL ---
-const geoCilindro = new THREE.CylinderGeometry(a, a, 10, 64, 1, true);
-const matCilindro = new THREE.MeshStandardMaterial({ map: texturaPiedra, side: THREE.DoubleSide, roughness: 0.8 });
-const cilindroCentral = new THREE.Mesh(geoCilindro, matCilindro);
-cilindroCentral.scale.set(1, 1, b/a);
-cilindroCentral.position.set(0, 1.125, 0);
+// NUEVA IMPLEMENTACIÓN: Aumentamos la altura de la geometría de 10 a 30.
+// Esto expande la torre automáticamente tanto por arriba como por abajo desde su centro.
+const geoCilindro = new THREE.CylinderGeometry(a, a, 30, 64, 1, true); 
+const matCilindro = new THREE.MeshStandardMaterial({ map: texturaPiedra, side: THREE.DoubleSide, roughness: 0.8 }); 
+const cilindroCentral = new THREE.Mesh(geoCilindro, matCilindro); 
+
+// Mantenemos la base circular aumentada (1.5 veces de tamaño en X y Z) de la actualización anterior
+cilindroCentral.scale.set(1.5, 1, 1.5); 
+
+// El centro de la torre permanece en Y = 1.125, por lo que ahora se extiende desde Y = -13.875 hasta Y = 16.125
+cilindroCentral.position.set(0, 1.125, 0); 
 scene.add(cilindroCentral);
 
 
@@ -278,17 +322,36 @@ initLighting();
 
 // --- 9. ANIMACIÓN Y SCROLL (GSAP) ---
 const scrollData = { progreso: 0 };
-gsap.to(scrollData, {
-    progreso: 1,
-    ease: "none",
-    scrollTrigger: {
-        trigger: "body", start: "top top", end: "bottom bottom", scrub: 1,
-    },
-    onUpdate: () => {
-        const index = Math.floor(scrollData.progreso * segmentos) % segmentos;
-        camera.position.copy(puntosEsquiva[index]);
-        camera.lookAt(0, 2, 0);
-    }
+let ultimoIndexLogueado = -1; // NUEVA VARIABLE: Guarda el último segmento recorrido para evitar bucles de sonido
+
+gsap.to(scrollData, { 
+    progreso: 1, 
+    ease: "none", 
+    scrollTrigger: { 
+        trigger: "body", 
+        start: "top top", 
+        end: "bottom bottom", 
+        scrub: 1, 
+        onLeave: () => window.scrollTo(0, 1), 
+        onEnterBack: () => window.scrollTo(0, document.body.scrollHeight - 1) 
+    }, 
+    onUpdate: () => { 
+        const index = Math.floor(scrollData.progreso * segmentos) % segmentos; 
+        camera.position.copy(puntosEsquiva[index]); 
+        camera.lookAt(0, 2, 0); 
+
+        // NUEVA IMPLEMENTACIÓN: Reproducción controlada de sonido al cambiar de segmento
+        if (index !== ultimoIndexLogueado) {
+            if (sonidoScroll && sonidoScroll.buffer) {
+                // Si el sonido se estaba reproduciendo, lo detenemos para reiniciarlo rápidamente
+                if (sonidoScroll.isPlaying) {
+                    sonidoScroll.stop();
+                }
+                sonidoScroll.play();
+            }
+            ultimoIndexLogueado = index; // Actualizamos el índice de control
+        }
+    } 
 });
 
 // --- 10. EVENTO DE CLIC (ACTUALIZADO CON CONTENIDO DINÁMICO) ---
