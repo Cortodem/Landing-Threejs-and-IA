@@ -7,7 +7,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 
 // NUEVA IMPLEMENTACIÓN: Posicionar la cámara en el centro de la elipse (X=0, Z=0) a altura Y=1
 camera.position.set(12.5, 1, 0);
-// Apuntar la cámara exactamente al origen de coordenadas (0, 0, 0)
+// Apuntar la cámara exactamente al origen de coordenadas (0, 2, 0)
 camera.lookAt(0, 2, 0);
 
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
@@ -322,36 +322,37 @@ initLighting();
 
 // --- 9. ANIMACIÓN Y SCROLL (GSAP) ---
 const scrollData = { progreso: 0 };
-let ultimoIndexLogueado = -1; // NUEVA VARIABLE: Guarda el último segmento recorrido para evitar bucles de sonido
 
-gsap.to(scrollData, { 
-    progreso: 1, 
-    ease: "none", 
-    scrollTrigger: { 
-        trigger: "body", 
-        start: "top top", 
-        end: "bottom bottom", 
-        scrub: 1, 
-        onLeave: () => window.scrollTo(0, 1), 
-        onEnterBack: () => window.scrollTo(0, document.body.scrollHeight - 1) 
-    }, 
-    onUpdate: () => { 
-        const index = Math.floor(scrollData.progreso * segmentos) % segmentos; 
-        camera.position.copy(puntosEsquiva[index]); 
-        camera.lookAt(0, 2, 0); 
-
-        // NUEVA IMPLEMENTACIÓN: Reproducción controlada de sonido al cambiar de segmento
-        if (index !== ultimoIndexLogueado) {
-            if (sonidoScroll && sonidoScroll.buffer) {
-                // Si el sonido se estaba reproduciendo, lo detenemos para reiniciarlo rápidamente
-                if (sonidoScroll.isPlaying) {
-                    sonidoScroll.stop();
-                }
-                sonidoScroll.play();
-            }
-            ultimoIndexLogueado = index; // Actualizamos el índice de control
-        }
-    } 
+const scrollTween = gsap.to(scrollData, {
+  progreso: 1,
+  ease: "none",
+  scrollTrigger: {
+    trigger: "body",
+    start: "top top",
+    end: "bottom bottom",
+    scrub: 1,
+    onLeave: (self) => {
+      // 1. Reseteamos la posición del scroll en el DOM
+      window.scrollTo(0, 1);
+      // 2. Forzamos a GSAP a posicionar la animación al inicio sin suavizado ni retraso
+      scrollTween.progress(0);
+      // 3. Sincronizamos el estado de ScrollTrigger
+      self.update();
+    },
+    onEnterBack: (self) => {
+      // 1. Saltamos al final del scroll en el DOM
+      window.scrollTo(0, document.body.scrollHeight - 1);
+      // 2. Forzamos a GSAP a posicionar la animación al final instantáneamente
+      scrollTween.progress(1);
+      // 3. Sincronizamos el estado de ScrollTrigger
+      self.update();
+    }
+  },
+  onUpdate: () => {
+    const index = Math.floor(scrollData.progreso * segmentos) % segmentos;
+    camera.position.copy(puntosEsquiva[index]);
+    camera.lookAt(0, 0, 0);
+  }
 });
 
 // --- 10. EVENTO DE CLIC (ACTUALIZADO CON CONTENIDO DINÁMICO) ---
