@@ -22,13 +22,22 @@ body {
     color: var(--text-primary);
     font-family: 'Inter', 'Montserrat', system-ui, sans-serif;
     line-height: 1.5;
-    height: 1000vh;
+    height: 40000vh;
     overflow-y: scroll;
     overflow-x: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
 }
 
+/* Ocultar barra de scroll global */
+html,
+body {
+    /* Ocultar en Firefox */
+    scrollbar-width: none; 
+    /* Ocultar en IE y Edge antiguo */
+    -ms-overflow-style: none; 
+}
+
+/* Ocultar barra de scroll en navegadores basados en WebKit (Chrome, Safari, Opera, Edge moderno) */
+html::-webkit-scrollbar,
 body::-webkit-scrollbar {
     display: none;
 }

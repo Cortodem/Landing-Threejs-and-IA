@@ -274,32 +274,38 @@ cilindroCentral.position.set(0, 1.125, 0);
 scene.add(cilindroCentral);
 
 
-// 8. Recorrido Elíptico Sincronizado
+// --- 8. Recorrido Elíptico Sincronizado (40 Vueltas) ---
 const puntosEsquiva = [];
-const segmentos = 300;
-const aCamara = 12.5; // Radio elipse verde en X (a + 2.5)
-const bCamara = 7.5;  // Radio elipse verde en Z (b + 2.5)
+const vueltasTotales = 40;
+// 300 segmentos por vuelta * 40 vueltas = 12.000 puntos para mantener la resolución de interpolación en Three.js
+const segmentos = 300 * vueltasTotales; 
+const aCamara = 12.5;  // Radio elipse verde en X (a + 2.5)
+const bCamara = 7.5;   // Radio elipse verde en Z (b + 2.5)
 
 for (let i = 0; i <= segmentos; i++) {
-    const theta = (i / segmentos) * Math.PI * 2;
+    // Multiplicamos por (40 * 2 * Math.PI) para completar 80π radianes totales
+    const theta = (i / segmentos) * Math.PI * 2 * vueltasTotales;
 
-    // X y Z siguen una elipse perfecta
+    // Posición X y Z en la elipse a lo largo de las 40 vueltas
     const x = aCamara * Math.cos(theta);
     const z = bCamara * Math.sin(theta);
 
-    // Y sigue la subida y bajada de las escaleras (Y base 1 + elevación de 3)
+    // Normalizamos el ángulo a la vuelta actual (0 a 2π) para reutilizar el patrón Y de subida/bajada
+    const thetaNorm = theta % (Math.PI * 2);
+
+    // Y sigue la subida y bajada del escenario en cada una de las 40 vueltas
     let y = 1;
     // Tramo 1 a 3 (Subida):
-    if (theta > 0 && theta < Math.PI / 2) {
-        y = 1 + (theta / (Math.PI / 2)) * 3;
+    if (thetaNorm > 0 && thetaNorm < Math.PI / 2) {
+        y = 1 + (thetaNorm / (Math.PI / 2)) * 3;
     }
     // Tramo 3 a 2 (Meseta):
-    else if (theta >= Math.PI / 2 && theta <= Math.PI) {
+    else if (thetaNorm >= Math.PI / 2 && thetaNorm <= Math.PI) {
         y = 4;
     }
     // Tramo 2 a 4 (Bajada):
-    else if (theta > Math.PI && theta < (3 * Math.PI) / 2) {
-        y = 4 - ((theta - Math.PI) / (Math.PI / 2)) * 3;
+    else if (thetaNorm > Math.PI && thetaNorm < (3 * Math.PI) / 2) {
+        y = 4 - ((thetaNorm - Math.PI) / (Math.PI / 2)) * 3;
     }
 
     puntosEsquiva.push(new THREE.Vector3(x, y, z));
