@@ -323,30 +323,14 @@ initLighting();
 // --- 9. ANIMACIÓN Y SCROLL (GSAP) ---
 const scrollData = { progreso: 0 };
 
-const scrollTween = gsap.to(scrollData, {
+gsap.to(scrollData, {
   progreso: 1,
   ease: "none",
   scrollTrigger: {
     trigger: "body",
     start: "top top",
     end: "bottom bottom",
-    scrub: 1,
-    onLeave: (self) => {
-      // 1. Reseteamos la posición del scroll en el DOM
-      window.scrollTo(0, 1);
-      // 2. Forzamos a GSAP a posicionar la animación al inicio sin suavizado ni retraso
-      scrollTween.progress(0);
-      // 3. Sincronizamos el estado de ScrollTrigger
-      self.update();
-    },
-    onEnterBack: (self) => {
-      // 1. Saltamos al final del scroll en el DOM
-      window.scrollTo(0, document.body.scrollHeight - 1);
-      // 2. Forzamos a GSAP a posicionar la animación al final instantáneamente
-      scrollTween.progress(1);
-      // 3. Sincronizamos el estado de ScrollTrigger
-      self.update();
-    }
+    scrub: 1
   },
   onUpdate: () => {
     const index = Math.floor(scrollData.progreso * segmentos) % segmentos;
