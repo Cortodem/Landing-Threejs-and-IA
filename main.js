@@ -6,7 +6,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 // NUEVA IMPLEMENTACIÓN: Posicionar la cámara en el centro de la elipse (X=0, Z=0) a altura Y=1
-camera.position.set(12.5, 1, 0);
+camera.position.set(14, 1, 0);
 // Apuntar la cámara exactamente al origen de coordenadas (0, 2, 0)
 camera.lookAt(0, 2, 0);
 
@@ -450,8 +450,8 @@ const puntosEsquiva = [];
 const vueltasTotales = 40;
 // 300 segmentos por vuelta * 40 vueltas = 12.000 puntos para mantener la resolución de interpolación en Three.js
 const segmentos = 300 * vueltasTotales; 
-const aCamara = 2+12.5;  // Radio elipse verde en X (a + 2.5)
-const bCamara = 2+7.5;   // Radio elipse verde en Z (b + 2.5)
+const aCamara = 14;  // Radio elipse verde en X (a + 2.5)
+const bCamara = 9;   // Radio elipse verde en Z (b + 2.5)
 
 for (let i = 0; i <= segmentos; i++) {
     // Multiplicamos por (40 * 2 * Math.PI) para completar 80π radianes totales
@@ -498,22 +498,30 @@ initLighting();
 
 
 // --- 9. ANIMACIÓN Y SCROLL (GSAP) ---
+// Instancia de reloj para calcular el tiempo transcurrido
+const clock = new THREE.Clock();
+
+// Vector que almacena la posición base de la cámara según el scroll
+const posicionBaseCamara = new THREE.Vector3().copy(camera.position);
+
 const scrollData = { progreso: 0 };
 
 gsap.to(scrollData, {
-  progreso: 1,
-  ease: "none",
-  scrollTrigger: {
-    trigger: "body",
-    start: "top top",
-    end: "bottom bottom",
-    scrub: 1
-  },
-  onUpdate: () => {
-    const index = Math.floor(scrollData.progreso * segmentos) % segmentos;
-    camera.position.copy(puntosEsquiva[index]);
-    camera.lookAt(0, 2, 0);
-  }
+    progreso: 1,
+    ease: "none",
+    scrollTrigger: {
+        trigger: "body",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1
+    },
+    onUpdate: () => {
+        const index = Math.floor(scrollData.progreso * segmentos) % segmentos;
+        if (puntosEsquiva[index]) {
+            // Actualizamos solo la posición base, dejando que animate() aplique el vaivén
+            posicionBaseCamara.copy(puntosEsquiva[index]);
+        }
+    }
 });
 
 // --- 10. EVENTO DE CLIC (ACTUALIZADO CON CONTENIDO DINÁMICO) ---
@@ -570,13 +578,37 @@ window.addEventListener('resize', () => {
     }, 150); // 150ms es el tiempo ideal para evitar sobrecarga en móviles
 });
 
-
-
 function animate() {
     requestAnimationFrame(animate);
+
+    const tiempo = clock.getElapsedTime();
+
+    // MOVIMIENTO DE ESCOBA ESTÁTICA (Oscilación armónica):
+    // - Elevación/Descenso vertical (amplitud: 0.15 m, velocidad: 1.8 rad/s)
+    // - Balanceo suave secundario en Z (amplitud: 0.04 m)
+    const flotacionY = Math.sin(tiempo * 0.8) * 0.15;
+    const balanceoZ = Math.cos(tiempo * 1.2) * 0.04;
+
+    // Aplicar la oscilación sobre la posición base
+    camera.position.x = posicionBaseCamara.x + balanceoZ;
+    camera.position.y = posicionBaseCamara.y + flotacionY;
+    camera.position.z = posicionBaseCamara.z + balanceoZ;
+
+    // Mantener la cámara enfocada en el punto de interés del escenario (origen Y=2)
+    camera.lookAt(0, 2, 0);
+
+    // Raycasting optimizado (procesado una vez por frame cuando hay movimiento)
+    if (typeof necesitaRaycast !== 'undefined' && necesitaRaycast) {
+        raycaster.setFromCamera(mouse, camera);
+        const intersects = raycaster.intersectObjects(bloques, false);
+        document.body.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
+        necesitaRaycast = false;
+    }
+
     renderer.render(scene, camera);
 }
 animate();
+
 
 
 
