@@ -88,16 +88,78 @@ const texturaMaderaEscaleras = loader.load('assets/textures/wood_table_worn_1k.j
 const texturaPuerta = loader.load('assets/textures/wood_planks_dirt_1k.jpg');
 
 // Configuración de repetición
-[texturaPiedra, texturaMarmol, texturaMaderaEscaleras].forEach(t => {
-    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+[texturaPiedra, texturaMarmol, texturaMaderaEscaleras, texturaPuerta].forEach(t => { 
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; 
 });
+
 texturaPiedra.repeat.set(4, 3);
 texturaMarmol.repeat.set(16, 1);
+texturaPuerta.repeat.set(1, 0.5);
 
 // --- 3. GEOMETRÍAS Y MATERIALES COMPARTIDOS (OPTIMIZACIÓN DE MEMORIA) ---
 
-const geoPuerta = new THREE.BoxGeometry(1.2, 2.4, 0.2);
+// --- 3.1. GEOMETRÍA Y MATERIAL DE LA HOJA DE LA PUERTA (1.60m x 3.60m) ---
+const shapePuertaOjival = new THREE.Shape();
+shapePuertaOjival.moveTo(-0.80, 0);
+shapePuertaOjival.lineTo(-0.80, 2.70);
+shapePuertaOjival.quadraticCurveTo(-0.75, 3.55, 0, 3.60);
+shapePuertaOjival.quadraticCurveTo(0.75, 3.55, 0.80, 2.70);
+shapePuertaOjival.lineTo(0.80, 0);
+shapePuertaOjival.closePath();
+
+const extrudePuertaSettings = {
+    depth: 0.18,
+    bevelEnabled: true,
+    bevelSegments: 2,
+    steps: 1,
+    bevelSize: 0.005,
+    bevelThickness: 0.005
+};
+
+const geoPuerta = new THREE.ExtrudeGeometry(shapePuertaOjival, extrudePuertaSettings);
+geoPuerta.translate(0, 0, -0.09); // Centrado en Z (-0.09 m a +0.09 m)
+
 const matPuerta = new THREE.MeshStandardMaterial({ map: texturaPuerta, roughness: 0.8 });
+
+
+// --- 3.2. GEOMETRÍA Y MATERIAL DEL MARCO DE PIEDRA (0.12m DE PERFIL POR LADO) ---
+const shapeMarco = new THREE.Shape();
+// Perfil exterior (Ancho: 1.84 m, Alto: 3.72 m)
+shapeMarco.moveTo(-0.92, 0);
+shapeMarco.lineTo(-0.92, 2.70);
+shapeMarco.quadraticCurveTo(-0.85, 3.65, 0, 3.72);
+shapeMarco.quadraticCurveTo(0.85, 3.65, 0.92, 2.70);
+shapeMarco.lineTo(0.92, 0);
+shapeMarco.closePath();
+
+// Vano interior recortado (Ancho: 1.60 m, Alto: 3.60 m)
+const vanoInterior = new THREE.Path();
+vanoInterior.moveTo(-0.80, 0);
+vanoInterior.lineTo(-0.80, 2.70);
+vanoInterior.quadraticCurveTo(-0.75, 3.55, 0, 3.60);
+vanoInterior.quadraticCurveTo(0.75, 3.55, 0.80, 2.70);
+vanoInterior.lineTo(0.80, 0);
+vanoInterior.closePath();
+
+shapeMarco.holes.push(vanoInterior);
+
+const extrudeMarcoSettings = {
+    depth: 0.24,
+    bevelEnabled: true,
+    bevelSegments: 2,
+    steps: 1,
+    bevelSize: 0.008,
+    bevelThickness: 0.008
+};
+
+const geoMarco = new THREE.ExtrudeGeometry(shapeMarco, extrudeMarcoSettings);
+geoMarco.translate(0, 0, -0.12); // Centrado en Z (-0.12 m a +0.12 m)
+
+// Material del marco utilizando la textura de piedra
+const matMarco = new THREE.MeshStandardMaterial({ 
+    map: texturaPiedra, 
+    roughness: 0.85 
+});
 
 const geoMuro = new THREE.BoxGeometry(0.1, 2, 0.6);
 const matMuro = new THREE.MeshStandardMaterial({ map: texturaPiedra, roughness: 0.9 });
@@ -112,6 +174,24 @@ texturaPiedra.repeat.set(4, 1); // Ajusta según prefieras la densidad de la pie
 const geoPasarela = new THREE.BoxGeometry(4, 0.1, 0.8);
 const matPasarela = new THREE.MeshStandardMaterial({ map: texturaMarmol, roughness: 0.7 });
 
+// Material para herrajes y bisagras de hierro forjado
+const matMetal = new THREE.MeshStandardMaterial({
+    color: 0x1f1a17,
+    metalness: 0.85,
+    roughness: 0.25
+});
+
+// Geometría de pletina de bisagra ornamental (0.18 m ancho x 0.05 m alto x 0.025 m grosor)
+const geoBisagra = new THREE.BoxGeometry(0.18, 0.05, 0.025);
+
+// Geometrías compartidas para manijas y argollas
+const geoPlacaManija = new THREE.BoxGeometry(0.06, 0.24, 0.015);
+const geoArgolla = new THREE.TorusGeometry(0.035, 0.008, 12, 24);
+const geoPivoteArgolla = new THREE.CylinderGeometry(0.01, 0.01, 0.025, 12);
+geoPivoteArgolla.rotateX(Math.PI / 2); // Orientar el cilindro hacia afuera en Z
+
+// Geometría para los paneles verticales en relieve (4 paneles por hoja)
+const geoPanelRelieve = new THREE.BoxGeometry(0.11, 2.15, 0.025);
 
 // --- 4. INTERACCIÓN Y RAYCASTER ---
 const raycaster = new THREE.Raycaster();
@@ -136,7 +216,7 @@ window.addEventListener('click', () => {
     }
 }, { once: true }); // Se ejecuta solo una vez
 
-// --- 5. BLOQUES Y PUERTAS ---
+// --- 5. BLOQUES Y PUERTAS GÓTICAS COMPLETAS (MARCO, BISAGRAS, MANIJAS Y PANELES) ---
 const a = 10, b = 5;
 const bloques = [];
 const datosBloques = [
@@ -147,30 +227,121 @@ const datosBloques = [
 ];
 
 datosBloques.forEach((d) => {
-    const puerta = new THREE.Mesh(geoPuerta, matPuerta);
-    const ySuelo = (d.id === 'personal' || d.id === 'jefes') ? 2.25 : -0.75;
-    let posX;
-    if (d.id === 'clases') {
-        posX = 10;
-    } else if (d.id === 'personal') {
-        posX = -10;
-    } else {
-        posX = 0;
-    }
-    let posZ;
-    if (d.id === 'jefes') {
-        posZ = 5;
-    } else if (d.id === 'premios') {
-        posZ = -5;
-    } else {
-        posZ = 0;
-    }
+    const grupoPuerta = new THREE.Group();
 
-    puerta.position.set(posX, ySuelo + 1.2, posZ);
-    puerta.lookAt(0, puerta.position.y, 0);
+    // 1. Hoja de la puerta
+    const puerta = new THREE.Mesh(geoPuerta, matPuerta);
     puerta.userData = { id: d.id };
-    scene.add(puerta);
-    bloques.push(puerta);
+    grupoPuerta.add(puerta);
+
+    // 2. Marco exterior de piedra
+    const marco = new THREE.Mesh(geoMarco, matMarco);
+    marco.userData = { id: d.id };
+    grupoPuerta.add(marco);
+
+    // 3. Bisagras ornamentales (Alturas: 0.45 m, 1.50 m y 2.70 m)
+    const alturasBisagras = [0.45, 1.50, 2.70];
+    alturasBisagras.forEach((yPos) => {
+        [-0.71, 0.71].forEach((xPos) => {
+            // Frontal (+Z)
+            const bisagraF = new THREE.Mesh(geoBisagra, matMetal);
+            bisagraF.position.set(xPos, yPos, 0.095);
+            bisagraF.userData = { id: d.id };
+            grupoPuerta.add(bisagraF);
+
+            // Posterior (-Z)
+            const bisagraP = new THREE.Mesh(geoBisagra, matMetal);
+            bisagraP.position.set(xPos, yPos, -0.095);
+            bisagraP.userData = { id: d.id };
+            grupoPuerta.add(bisagraP);
+
+            bloques.push(bisagraF, bisagraP);
+        });
+    });
+
+    // 4. Manijas y argollas (Centradas a 1.10 m del suelo)
+    const yManija = 1.10;
+    const offsetHojas = [-0.06, 0.06];
+
+    offsetHojas.forEach((xPos) => {
+        // Frontal (+Z)
+        const placaF = new THREE.Mesh(geoPlacaManija, matMetal);
+        placaF.position.set(xPos, yManija, 0.098);
+        placaF.userData = { id: d.id };
+        grupoPuerta.add(placaF);
+
+        const pivoteF = new THREE.Mesh(geoPivoteArgolla, matMetal);
+        pivoteF.position.set(xPos, yManija + 0.05, 0.11);
+        pivoteF.userData = { id: d.id };
+        grupoPuerta.add(pivoteF);
+
+        const argollaF = new THREE.Mesh(geoArgolla, matMetal);
+        argollaF.position.set(xPos, yManija + 0.015, 0.118);
+        argollaF.userData = { id: d.id };
+        grupoPuerta.add(argollaF);
+
+        // Posterior (-Z)
+        const placaP = new THREE.Mesh(geoPlacaManija, matMetal);
+        placaP.position.set(xPos, yManija, -0.098);
+        placaP.userData = { id: d.id };
+        grupoPuerta.add(placaP);
+
+        const pivoteP = new THREE.Mesh(geoPivoteArgolla, matMetal);
+        pivoteP.position.set(xPos, yManija + 0.05, -0.11);
+        pivoteP.userData = { id: d.id };
+        grupoPuerta.add(pivoteP);
+
+        const argollaP = new THREE.Mesh(geoArgolla, matMetal);
+        argollaP.position.set(xPos, yManija + 0.015, -0.118);
+        argollaP.userData = { id: d.id };
+        grupoPuerta.add(argollaP);
+
+        bloques.push(placaF, argollaF, placaP, argollaP);
+    });
+
+    // 5. PANELES VERTICALES EN RELIEVE (4 PANELES POR HOJA)
+    [-1, 1].forEach((lado) => { // Hoja izquierda (-1) y Hoja derecha (+1)
+        const xCentroHoja = lado * 0.40; // Centro horizontal de la hoja (-0.40m o +0.40m)
+        const xSpacing = 0.16;
+
+        for (let i = 0; i < 4; i++) {
+            const xPos = xCentroHoja + (i - 1.5) * xSpacing;
+
+            // Relieve frontal (+Z)
+            const panelFrontal = new THREE.Mesh(geoPanelRelieve, matPuerta);
+            panelFrontal.position.set(xPos, 1.35, 0.098);
+            panelFrontal.userData = { id: d.id };
+            grupoPuerta.add(panelFrontal);
+
+            // Relieve posterior (-Z)
+            const panelPosterior = new THREE.Mesh(geoPanelRelieve, matPuerta);
+            panelPosterior.position.set(xPos, 1.35, -0.098);
+            panelPosterior.userData = { id: d.id };
+            grupoPuerta.add(panelPosterior);
+
+            bloques.push(panelFrontal, panelPosterior);
+        }
+    });
+
+    // Posicionamiento final del grupo en el suelo y orientación vertical a 90º
+    const ySuelo = (d.id === 'personal' || d.id === 'jefes') ? 2.25 : -0.75;
+    
+    let posX;
+    if (d.id === 'clases') { posX = 10; }
+    else if (d.id === 'personal') { posX = -10; }
+    else { posX = 0; }
+    
+    let posZ;
+    if (d.id === 'jefes') { posZ = 5; }
+    else if (d.id === 'premios') { posZ = -5; }
+    else { posZ = 0; }
+
+    grupoPuerta.position.set(posX, ySuelo, posZ);
+    grupoPuerta.lookAt(0, grupoPuerta.position.y, 0);
+    grupoPuerta.userData = { id: d.id };
+    
+    scene.add(grupoPuerta);
+    bloques.push(puerta, marco);
 });
 
 // --- 6. FUNCIONES PROCEDIMENTALES OPTIMIZADAS ---
@@ -279,8 +450,8 @@ const puntosEsquiva = [];
 const vueltasTotales = 40;
 // 300 segmentos por vuelta * 40 vueltas = 12.000 puntos para mantener la resolución de interpolación en Three.js
 const segmentos = 300 * vueltasTotales; 
-const aCamara = 12.5;  // Radio elipse verde en X (a + 2.5)
-const bCamara = 7.5;   // Radio elipse verde en Z (b + 2.5)
+const aCamara = 2+12.5;  // Radio elipse verde en X (a + 2.5)
+const bCamara = 2+7.5;   // Radio elipse verde en Z (b + 2.5)
 
 for (let i = 0; i <= segmentos; i++) {
     // Multiplicamos por (40 * 2 * Math.PI) para completar 80π radianes totales
