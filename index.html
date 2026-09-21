@@ -57,16 +57,42 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script type="module" src="main.js"></script>
     <script>
-        // Mover scroll a objeto al hacer clic en menú
+        // Mover scroll al objeto más cercano considerando la posición actual de la cámara
         globalThis.irAObjeto = (id) => {
-            console.log("irAObjeto run con id:" + id);
+            console.log("irAObjeto ejecutado con id: " + id);
 
+            const vueltasTotales = 40;
+            const fasesPuertas = {
+                clases: 0.0,
+                jefes: 0.25,
+                personal: 0.50,
+                premios: 0.75
+            };
 
-            const indices = { 'clases': 0, 'jefes': 0.25, 'personal': 0.5, 'premios': 0.75 };
-            const progresoDestino = indices[id];
+            const faseObjetivo = fasesPuertas[id];
+            if (faseObjetivo === undefined) return;
+
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            if (maxScroll <= 0) return;
+
+            const scrollActual = window.scrollY || window.pageYOffset || 0;
+            const progresoActual = scrollActual / maxScroll;
+            const vueltaActual = progresoActual * vueltasTotales;
+            const faseActual = ((vueltaActual % 1) + 1) % 1;
+
+            let deltaFase = faseObjetivo - faseActual;
+
+            if (deltaFase > 0.5) {
+                deltaFase -= 1.0;
+            } else if (deltaFase < -0.5) {
+                deltaFase += 1.0;
+            }
+
+            const vueltaDestino = vueltaActual + deltaFase;
+            const progresoDestino = Math.max(0, Math.min(1, vueltaDestino / vueltasTotales));
 
             window.scrollTo({
-                top: progresoDestino * (document.body.scrollHeight - window.innerHeight),
+                top: progresoDestino * maxScroll,
                 behavior: 'smooth'
             });
         };
@@ -173,33 +199,33 @@
         ];
         let infoJefes = [
             {
-            'casa': 'Gryffindor',
-            'imgCasa': 'https://i.imgur.com/1nSLN35.jpg',
-            'user': '35',
-            'nombre': 'Éfrone Cabane',
-            'imgUser': 'profile-2276558982_resized.jpg'
-        },
+                'casa': 'Gryffindor',
+                'imgCasa': 'https://i.imgur.com/1nSLN35.jpg',
+                'user': '35',
+                'nombre': 'Éfrone Cabane',
+                'imgUser': 'profile-2276558982_resized.jpg'
+            },
             {
-            'casa': 'Gryffindor',
-            'imgCasa': 'https://i.imgur.com/1nSLN35.jpg',
-            'user': '35',
-            'nombre': 'Éfrone Cabane',
-            'imgUser': 'profile-2276558982_resized.jpg'
-        },
+                'casa': 'Gryffindor',
+                'imgCasa': 'https://i.imgur.com/1nSLN35.jpg',
+                'user': '35',
+                'nombre': 'Éfrone Cabane',
+                'imgUser': 'profile-2276558982_resized.jpg'
+            },
             {
-            'casa': 'Gryffindor',
-            'imgCasa': 'https://i.imgur.com/1nSLN35.jpg',
-            'user': '35',
-            'nombre': 'Éfrone Cabane',
-            'imgUser': 'profile-2276558982_resized.jpg'
-        },
+                'casa': 'Gryffindor',
+                'imgCasa': 'https://i.imgur.com/1nSLN35.jpg',
+                'user': '35',
+                'nombre': 'Éfrone Cabane',
+                'imgUser': 'profile-2276558982_resized.jpg'
+            },
             {
-            'casa': 'Gryffindor',
-            'imgCasa': 'https://i.imgur.com/1nSLN35.jpg',
-            'user': '35',
-            'nombre': 'Éfrone Cabane',
-            'imgUser': 'profile-2276558982_resized.jpg'
-        }];
+                'casa': 'Gryffindor',
+                'imgCasa': 'https://i.imgur.com/1nSLN35.jpg',
+                'user': '35',
+                'nombre': 'Éfrone Cabane',
+                'imgUser': 'profile-2276558982_resized.jpg'
+            }];
         let infoPremios = 0;
         let contenidosInfo = {
             'clases': ``,
@@ -388,21 +414,21 @@
                         <div class="slider next" id="nextP" aria-label="Siguiente">›</div>
                     </div></section> `;
 
-            contenidosInfo.jefes =`<section>
+            contenidosInfo.jefes = `<section>
     <div><span>JEFES DE CASA</span></div>
         <div>
             <div>`
-                
-                infoJefes.forEach(jefe => {
-                    
-                    contenidosInfo.jefes += `<div>
+
+            infoJefes.forEach(jefe => {
+
+                contenidosInfo.jefes += `<div>
                     <div><img src="${jefe.imgCasa}"/></div>
                     <div>
                         <div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=${jefe.user}" title="Perfil" target="_blank">${jefe.nombre}</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=${jefe.user}" title="MP" target="_blank"><i><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10" /><path d="M3 7l9 6l9 -6" /></svg></i></a></div>
                     </div>
                 </div>`
             });
-            contenidosInfo.jefes +=`</div>
+            contenidosInfo.jefes += `</div>
         </div>
     </section >`;
 
