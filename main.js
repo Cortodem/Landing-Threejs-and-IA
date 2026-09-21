@@ -193,6 +193,54 @@ geoPivoteArgolla.rotateX(Math.PI / 2); // Orientar el cilindro hacia afuera en Z
 // Geometría para los paneles verticales en relieve (4 paneles por hoja)
 const geoPanelRelieve = new THREE.BoxGeometry(0.11, 2.15, 0.025);
 
+
+// Generador de textura Canvas 2D con destellos cromados y texto de alto contraste
+function crearTexturaCartel(texto) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+
+    // Gradiente metálico dorado con punto de luz especular central
+    const gradiente = ctx.createLinearGradient(0, 0, 1024, 256);
+    gradiente.addColorStop(0.0, '#8a5a0e');
+    gradiente.addColorStop(0.2, '#fff6bd');
+    gradiente.addColorStop(0.4, '#d4af37');
+    gradiente.addColorStop(0.5, '#ffffff'); // Destello brillante central
+    gradiente.addColorStop(0.6, '#d4af37');
+    gradiente.addColorStop(0.8, '#fff6bd');
+    gradiente.addColorStop(1.0, '#734807');
+    ctx.fillStyle = gradiente;
+    ctx.fillRect(0, 0, 1024, 256);
+
+    // Marco exterior biselado de doble borde
+    ctx.strokeStyle = '#2b1b03';
+    ctx.lineWidth = 16;
+    ctx.strokeRect(12, 12, 1000, 232);
+
+    ctx.strokeStyle = '#fff8db';
+    ctx.lineWidth = 6;
+    ctx.strokeRect(24, 24, 976, 208);
+
+    // Texto en negro azabache de máximo contraste con perfilado
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+    ctx.shadowBlur = 6;
+    ctx.fillStyle = '#020204';
+    ctx.font = 'bold 100px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(texto.toUpperCase(), 512, 128);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+    return texture;
+}
+
+// Geometría del cartel ampliada (0.95 m ancho x 0.28 m alto x 0.03 m grosor)
+const geoCartel = new THREE.BoxGeometry(0.95, 0.28, 0.03);
+
+
+
 // --- 4. INTERACCIÓN Y RAYCASTER ---
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -216,7 +264,7 @@ window.addEventListener('click', () => {
     }
 }, { once: true }); // Se ejecuta solo una vez
 
-// --- 5. BLOQUES Y PUERTAS GÓTICAS COMPLETAS (MARCO, BISAGRAS, MANIJAS Y PANELES) ---
+// --- 5. BLOQUES Y PUERTAS GÓTICAS COMPLETAS (MARCO, BISAGRAS, MANIJAS, PANELES Y CARTELES SOBREPUESTOS) ---
 const a = 10, b = 5;
 const bloques = [];
 const datosBloques = [
@@ -239,17 +287,15 @@ datosBloques.forEach((d) => {
     marco.userData = { id: d.id };
     grupoPuerta.add(marco);
 
-    // 3. Bisagras ornamentales (Alturas: 0.45 m, 1.50 m y 2.70 m)
+    // 3. Bisagras ornamentales
     const alturasBisagras = [0.45, 1.50, 2.70];
     alturasBisagras.forEach((yPos) => {
         [-0.71, 0.71].forEach((xPos) => {
-            // Frontal (+Z)
             const bisagraF = new THREE.Mesh(geoBisagra, matMetal);
             bisagraF.position.set(xPos, yPos, 0.095);
             bisagraF.userData = { id: d.id };
             grupoPuerta.add(bisagraF);
 
-            // Posterior (-Z)
             const bisagraP = new THREE.Mesh(geoBisagra, matMetal);
             bisagraP.position.set(xPos, yPos, -0.095);
             bisagraP.userData = { id: d.id };
@@ -259,12 +305,10 @@ datosBloques.forEach((d) => {
         });
     });
 
-    // 4. Manijas y argollas (Centradas a 1.10 m del suelo)
+    // 4. Manijas y argollas
     const yManija = 1.10;
     const offsetHojas = [-0.06, 0.06];
-
     offsetHojas.forEach((xPos) => {
-        // Frontal (+Z)
         const placaF = new THREE.Mesh(geoPlacaManija, matMetal);
         placaF.position.set(xPos, yManija, 0.098);
         placaF.userData = { id: d.id };
@@ -280,7 +324,6 @@ datosBloques.forEach((d) => {
         argollaF.userData = { id: d.id };
         grupoPuerta.add(argollaF);
 
-        // Posterior (-Z)
         const placaP = new THREE.Mesh(geoPlacaManija, matMetal);
         placaP.position.set(xPos, yManija, -0.098);
         placaP.userData = { id: d.id };
@@ -299,21 +342,19 @@ datosBloques.forEach((d) => {
         bloques.push(placaF, argollaF, placaP, argollaP);
     });
 
-    // 5. PANELES VERTICALES EN RELIEVE (4 PANELES POR HOJA)
-    [-1, 1].forEach((lado) => { // Hoja izquierda (-1) y Hoja derecha (+1)
-        const xCentroHoja = lado * 0.40; // Centro horizontal de la hoja (-0.40m o +0.40m)
+    // 5. Paneles verticales en relieve (4 paneles por hoja)
+    [-1, 1].forEach((lado) => {
+        const xCentroHoja = lado * 0.40;
         const xSpacing = 0.16;
 
         for (let i = 0; i < 4; i++) {
             const xPos = xCentroHoja + (i - 1.5) * xSpacing;
 
-            // Relieve frontal (+Z)
             const panelFrontal = new THREE.Mesh(geoPanelRelieve, matPuerta);
             panelFrontal.position.set(xPos, 1.35, 0.098);
             panelFrontal.userData = { id: d.id };
             grupoPuerta.add(panelFrontal);
 
-            // Relieve posterior (-Z)
             const panelPosterior = new THREE.Mesh(geoPanelRelieve, matPuerta);
             panelPosterior.position.set(xPos, 1.35, -0.098);
             panelPosterior.userData = { id: d.id };
@@ -323,124 +364,65 @@ datosBloques.forEach((d) => {
         }
     });
 
-    // Posicionamiento final del grupo en el suelo y orientación vertical a 90º
+    // 6. CARTEL DE ORO AMPLIADO MONTA-RELIEVE CON TEXTO DE ALTO CONTRASTE
+    const texturaCartel = crearTexturaCartel(d.id);
+    const matCartelOro = new THREE.MeshStandardMaterial({
+        map: texturaCartel,
+        metalness: 0.95,
+        roughness: 0.12
+    });
+
+    const cartelFrontal = new THREE.Mesh(geoCartel, matCartelOro);
+    cartelFrontal.position.set(0, 2.20, 0.135);
+    cartelFrontal.userData = { id: d.id };
+    grupoPuerta.add(cartelFrontal);
+
+    const cartelPosterior = new THREE.Mesh(geoCartel, matCartelOro);
+    cartelPosterior.position.set(0, 2.20, -0.135);
+    cartelPosterior.userData = { id: d.id };
+    grupoPuerta.add(cartelPosterior);
+
+    bloques.push(cartelFrontal, cartelPosterior);
+
+    // Posicionamiento final del grupo en el escenario
     const ySuelo = (d.id === 'personal' || d.id === 'jefes') ? 2.25 : -0.75;
-    
     let posX;
-    if (d.id === 'clases') { posX = 10; }
-    else if (d.id === 'personal') { posX = -10; }
-    else { posX = 0; }
-    
+    if (d.id === 'clases') {
+        posX = 10;
+    } else if (d.id === 'personal') {
+        posX = -10;
+    } else {
+        posX = 0;
+    }
+
     let posZ;
-    if (d.id === 'jefes') { posZ = 5; }
-    else if (d.id === 'premios') { posZ = -5; }
-    else { posZ = 0; }
+    if (d.id === 'jefes') {
+        posZ = 5;
+    } else if (d.id === 'premios') {
+        posZ = -5;
+    } else {
+        posZ = 0;
+    }
 
     grupoPuerta.position.set(posX, ySuelo, posZ);
     grupoPuerta.lookAt(0, grupoPuerta.position.y, 0);
     grupoPuerta.userData = { id: d.id };
-    
     scene.add(grupoPuerta);
     bloques.push(puerta, marco);
 });
-
 // --- 6. FUNCIONES PROCEDIMENTALES OPTIMIZADAS ---
-function crearPasarelaPlana(pInicio, pFin, y) {
-    const grupo = new THREE.Group();
-    const pasos = 80;
-    // Radios alineados con las escaleras (punto medio entre 10 y 14)
-    const aV = 12;
-    const bV = 7;
 
-    for (let i = 0; i <= pasos; i++) {
-        const t = i / pasos;
-        const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
 
-        const x = aV * Math.cos(theta);
-        const z = bV * Math.sin(theta);
+// --- 7. CILINDRO TORRE ---
 
-        const tramo = new THREE.Mesh(geoPasarela, matPasarela);
-        tramo.position.set(x, y, z);
-
-        // Orientación siguiendo la curva de la elipse
-        const sigTheta = theta + 0.01;
-        tramo.lookAt(aV * Math.cos(sigTheta), y, bV * Math.sin(sigTheta));
-
-        grupo.add(tramo);
-    }
-    scene.add(grupo);
-}
-
-function crearEscaleraEliptica(pInicio, pFin, yBaseInicio, yBaseFin) {
-    const grupo = new THREE.Group();
-    const pasos = 35;
-    const aV = 12; // Radio medio para el ancho de 4 (entre 10 y 14)
-    const bV = 7;  // Radio medio para el ancho de 4 (entre 5 y 9)
-
-    for (let i = 0; i <= pasos; i++) {
-        const t = i / pasos;
-        const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
-
-        const x = aV * Math.cos(theta);
-        const z = bV * Math.sin(theta);
-        const yBase = yBaseInicio + (yBaseFin - yBaseInicio) * t;
-
-        const escalon = new THREE.Mesh(geoEscalon, matEscalon);
-        escalon.position.set(x, yBase, z);
-
-        // Orientación para seguir la curva de la elipse
-        const sigTheta = theta + 0.01;
-        escalon.lookAt(aV * Math.cos(sigTheta), yBase, bV * Math.sin(sigTheta));
-
-        grupo.add(escalon);
-    }
-    scene.add(grupo);
-}
-
-function crearMurallaExterior(pInicio, pFin, y1, y2) {
-    const grupo = new THREE.Group();
-    const pasos = 250;
-    const aW = 14, bW = 9; // Radios exteriores
-
-    for (let i = 0; i <= pasos; i++) {
-        const t = i / pasos;
-        const theta = (pInicio + (pFin - pInicio) * t) * Math.PI * 2;
-        const x = aW * Math.cos(theta);
-        const z = bW * Math.sin(theta);
-        const yBase = y1 + (y2 - y1) * t;
-
-        // Reutilización de mallas
-        const muro = new THREE.Mesh(geoMuro, matMuro);
-        muro.position.set(x, yBase + 1, z);
-        muro.lookAt(0, muro.position.y, 0); // Orientación radial al centro
-        grupo.add(muro);
-    }
-    scene.add(grupo);
-}
-
-// Inicialización de estructuras
-// crearPasarelaPlana(0.23, 0.53, 2.25);
-// crearPasarelaPlana(0.71, 1.3, -0.75);
-
-// crearEscaleraEliptica(0.04, 0.23, -0.75, 2.25);
-// crearEscaleraEliptica(0.54, 0.73, 2.25, -0.75);
-
-// crearMurallaExterior(0, 0.25, -1.75, 1.25);
-// crearMurallaExterior(0.25, 0.5, 1.25, 1.25);
-// crearMurallaExterior(0.5, 0.75, 1.25, -1.75);
-// crearMurallaExterior(0.75, 1, -1.75, -1.75);
-
-// --- 7. CILINDRO CENTRAL ---
-// NUEVA IMPLEMENTACIÓN: Aumentamos la altura de la geometría de 10 a 30.
-// Esto expande la torre automáticamente tanto por arriba como por abajo desde su centro.
-const geoCilindro = new THREE.CylinderGeometry(a, a, 30, 64, 1, true); 
+const geoCilindro = new THREE.CylinderGeometry(a, a, 56, 64, 1, true); 
 const matCilindro = new THREE.MeshStandardMaterial({ map: texturaPiedra, side: THREE.DoubleSide, roughness: 0.8 }); 
 const cilindroCentral = new THREE.Mesh(geoCilindro, matCilindro); 
 
-// Mantenemos la base circular aumentada (1.5 veces de tamaño en X y Z) de la actualización anterior
+// Mantenemos la base circular aumentada
 cilindroCentral.scale.set(1.5, 1, 1.5); 
 
-// El centro de la torre permanece en Y = 1.125, por lo que ahora se extiende desde Y = -13.875 hasta Y = 16.125
+// El centro de la torre permanece en Y = 1.125
 cilindroCentral.position.set(0, 1.125, 0); 
 scene.add(cilindroCentral);
 
