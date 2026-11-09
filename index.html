@@ -226,63 +226,33 @@
                 'nombre': 'Éfrone Cabane',
                 'imgUser': 'profile-2276558982_resized.jpg'
             }];
-        let infoPremios = 0;
+        let infoPremios = [
+            {
+                'imagen': 'https://i.imgur.com/1nSLN35.jpg',
+                'nombre': 'Elisabeth Walker',
+                'user': '303'
+            },
+            {
+                'imagen': 'https://i.imgur.com/8qh5m1Q.jpg',
+                'nombre': 'Elián Idriswenjellu',
+                'user': '107'
+            },
+            {
+                'imagen': 'https://i.imgur.com/8jUIPFK.jpg',
+                'nombre': 'Victoria DeLacourt',
+                'user': '122'
+            },
+            {
+                'imagen': 'https://i.imgur.com/JMfkre8.jpg',
+                'nombre': 'Ivar Solheim',
+                'user': '69'
+            }
+        ];
         let contenidosInfo = {
             'clases': ``,
             'personal': ``,
             'jefes': ``,
-
-
-            'premios': `< section >
-    <div>X</div>
-    <div><span>PREMIOS ANUALES</span></div>
-     <div>
-     <div>
-
-    <div>
-       <img src="https://i.imgur.com/1nSLN35.jpg" width="200px">
-    </div>
-
-    <div>
-      <img src="https://i.imgur.com/8qh5m1Q.jpg" width="200px">
-    </div>
-
-    <div>
-      <img src="https://i.imgur.com/8jUIPFK.jpg" width="200px">
-    </div>
-    <div>
-      <img src="https://i.imgur.com/JMfkre8.jpg" width="200px">
-    </div>
-
-    <!--  Sin rostro:  https://i.imgur.com/TJ8lcTM.jpg-->
-    <div>
-      <div>X</div>
-      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=303" title="Perfil" target="_blank">Elisabeth Walker</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=303" title="MP" target="_blank"><i></i></a></div></div>
-    </div>
-
-
-    <div>
-      <div>X</div>
-      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=107" title="Perfil" target="_blank">Elián Idriswenjellu</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=107" title="MP" target="_blank"><i></i></a></div></div>
-    </div>
-
-    <div>
-      <div>X</div>
-      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=122" title="Perfil" target="_blank">Victoria DeLacourt</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=122" title="MP" target="_blank"><i></i></a></div></div>
-    </div>
-
-    <div>
-      <div>X</div>
-      <div><div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=69" title="Perfil" target="_blank">Ivar Solheim</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=69" title="MP" target="_blank"><i></i></a></div></div>
-    </div>
-
-
-
-  </div>
-
-
-    </div>
-  </section > `
+            'premios': ``
         };
         let currentSlideClases = 0;
         let currentSlidePersonal = 0;
@@ -378,59 +348,72 @@
             </section>
 </section > `;
 
-            contenidosInfo.personal = `<section>
-    <div><span>PERSONAL</span></div>
-    <div>
-      <div>
-        <div>
-            <nav>`
+            contenidosInfo.personal = `<section class="section-prof">
+                <div>
+                    <div><span>PERSONAL</span></div>
+                    <section>
+                        <div class="personal">`;
 
             infoPersonal.forEach(personal => {
-                contenidosInfo.personal += `<a id="profile"><img src="https://i.imgur.com/Eyhu5fw.png" /><span>${personal.cargo}</span></a>
-                <!--<a id="payment"><img src="https://i.imgur.com/pM5t86n.png"/><span>${personal.cargo}</span></a>
-                <a id="privacy"><img src="https://i.imgur.com/Y7C48Z7.png"/><span>${personal.cargo}</span></a>
-                <a id="subscription"><img src="https://i.imgur.com/U2Lend0.png"/><span>${personal.cargo}</span></a>
-                <a id="settings"><img src="https://i.imgur.com/wdobfpz.png"/><span>${personal.cargo}</span></a>
-                <a id="key"><img src="https://i.imgur.com/szQqI1z.png"/><span>${personal.cargo}</span></a>-->`
+                contenidosInfo.personal += `<div>
+                    <article class="card">
+                        <img src="${personal.imagen}" alt="${personal.nombre}" />
+                        <h2>
+                            <span>${personal.cargo}</span>
+                            <a href="https://harrypotterhead.com/foro/index.php?action=profile;u=${personal.user}" title="Perfil" target="_blank" rel="noopener noreferrer">${personal.nombre}</a>
+                        </h2>
+                        <a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=${personal.user}" title="Enviar mensaje" target="_blank" rel="noopener noreferrer">Enviar mensaje</a>
+                    </article>
+                </div>`;
             });
-
-            contenidosInfo.personal += `</nav></div ><div class="personal">`
-
-            infoPersonal.forEach(personal => {
-                contenidosInfo.personal += `<div><article class="card"><img src="${personal.imagen}" />
-                    <div>${personal.cargo}</div>
-                    <div>
-                        <div >
-                            <a href="https://harrypotterhead.com/foro/index.php?action=profile;u=${personal.user}" title="Perfil" target="_blank"> ${personal.nombre}</a>
-                            <br /><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=${personal.user}" title="MP" target="_blank"><i><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10" /><path d="M3 7l9 6l9 -6" /></svg></i></a>
-                        </div>
-                    </div>
-                </article></div>`;
-            });
-            contenidosInfo.personal += `</div></div>
-            <div class="flex">
+            contenidosInfo.personal += `</div>
+                    </section>
+                    <div class="flex">
                         <div class="slider prev" id="prevP" aria-label="Anterior">‹</div>
-                        <div class="dots" id="dots">dots</div>
+                        <div class="dots" id="dots"></div>
                         <div class="slider next" id="nextP" aria-label="Siguiente">›</div>
-                    </div></section> `;
+                    </div>
+                </div>
+            </section>`;
 
-            contenidosInfo.jefes = `<section>
-    <div><span>JEFES DE CASA</span></div>
-        <div>
-            <div>`
+            contenidosInfo.jefes = `<section class="section-prof">
+                <div>
+                    <div><span>JEFES DE CASA</span></div>
+                    <section class="jefes-grid">`;
 
             infoJefes.forEach(jefe => {
-
-                contenidosInfo.jefes += `<div>
-                    <div><img src="${jefe.imgCasa}"/></div>
-                    <div>
-                        <div><a href="https://harrypotterhead.com/foro/index.php?action=profile;u=${jefe.user}" title="Perfil" target="_blank">${jefe.nombre}</a>  <br/><a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=${jefe.user}" title="MP" target="_blank"><i><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10" /><path d="M3 7l9 6l9 -6" /></svg></i></a></div>
-                    </div>
-                </div>`
+                contenidosInfo.jefes += `<article class="card jefe-card">
+                    <img src="${jefe.imgCasa}" alt="Casa ${jefe.casa}" />
+                    <h2>
+                        <span>${jefe.casa}</span>
+                        <a href="https://harrypotterhead.com/foro/index.php?action=profile;u=${jefe.user}" title="Perfil" target="_blank" rel="noopener noreferrer">${jefe.nombre}</a>
+                    </h2>
+                    <a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=${jefe.user}" title="Enviar mensaje" target="_blank" rel="noopener noreferrer">Enviar mensaje</a>
+                </article>`;
             });
-            contenidosInfo.jefes += `</div>
-        </div>
-    </section >`;
+            contenidosInfo.jefes += `</section>
+                </div>
+            </section>`;
+
+            contenidosInfo.premios = `<section class="section-prof">
+                <div>
+                    <div><span>PREMIOS ANUALES</span></div>
+                    <section class="premios-grid">`;
+
+            infoPremios.forEach(premio => {
+                contenidosInfo.premios += `<article class="card premio-card">
+                    <img src="${premio.imagen}" alt="Premio anual" />
+                    <div>
+                        <a href="https://harrypotterhead.com/foro/index.php?action=profile;u=${premio.user}" title="Perfil" target="_blank" rel="noopener noreferrer">${premio.nombre}</a>
+                        <br />
+                        <a href="https://harrypotterhead.com/foro/index.php?action=pm;sa=send;u=${premio.user}" title="Enviar mensaje" target="_blank" rel="noopener noreferrer">Enviar mensaje</a>
+                    </div>
+                </article>`;
+            });
+
+            contenidosInfo.premios += `</section>
+                </div>
+            </section>`;
 
             document.querySelector('#clases').innerHTML = contenidosInfo['clases'];
 

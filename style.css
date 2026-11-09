@@ -159,7 +159,8 @@ nav button:focus-visible {
     padding-top: 1rem;
 }
 
-.profesores {
+.profesores,
+.personal {
     width: 100%;
     display: flex;
     gap: 1rem;
@@ -171,11 +172,13 @@ nav button:focus-visible {
     scrollbar-width: none; /* hide scrollbar in Firefox */
 }
 
-.profesores::-webkit-scrollbar {
+.profesores::-webkit-scrollbar,
+.personal::-webkit-scrollbar {
     display: none; /* hide scrollbar in WebKit browsers */
 }
 
-.profesores > div {
+.profesores > div,
+.personal > div {
     flex: 0 0 calc((100% - 2rem) / 3);
     display: flex;
     scroll-snap-align: start;
@@ -183,8 +186,40 @@ nav button:focus-visible {
 }
 
 .profesores > div:hover,
-.profesores > div:focus {
+.profesores > div:focus,
+.personal > div:hover,
+.personal > div:focus {
     transform: translateY(-2px);
+}
+
+.personal {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.jefes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.premios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.premio-card {
+    align-content: start;
+}
+
+.premio-card > img {
+    width: 140px;
+    height: 140px;
+}
+
+.jefe-card > img {
+    border-radius: 20px;
 }
 
 .card {
